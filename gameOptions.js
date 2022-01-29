@@ -7,7 +7,7 @@ let gameOptions = {
     playerStartPosition: 3*32*360/60,
     levelGenerator:{
         8:"jump",
-        11:"slide",
+        13:"slide",
         25:"jump",
         29:"slide",
         33:"jump",
