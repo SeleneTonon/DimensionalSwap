@@ -100,14 +100,15 @@ class playGame extends Phaser.Scene{
         this.load.image('bomb', 'assets/bomb.png');
         this.load.spritesheet('goblin', 'assets/gobelins2.png', { frameWidth: 572, frameHeight: 528 });
         this.load.spritesheet('lisbeicourse', 'assets/lisbeicourse.png', { frameWidth: 181, frameHeight: 232 });
-        this.load.audio('main',['assets/MEDPROJECTTest.wav','assets/MEDPROJECTTest.aif']);
-        this.load.audio('swap',['assets/soundDesign/Swap.wav']);
-        this.load.audio('jump',['assets/soundDesign/Jump.wav']);
-        this.load.audio('tirHF',['assets/soundDesign/TirHF.wav']);
-        this.load.audio('tirSF',['assets/soundDesign/TirSF.wav']);
-        this.load.audio('hitHF',['assets/soundDesign/HitHF.wav']);
-        this.load.audio('hitSF',['assets/soundDesign/HitSF.wav']);
-        this.load.audio('hitObstacle',['assets/soundDesign/HitObstacle.wav']);
+        this.load.audio('musicHF',['assets/music/MorceauHF.mp3']);
+        this.load.audio('musicSF',['assets/music/MorceauSF.mp3']);
+        this.load.audio('swap',['assets/soundDesign/Swap.mp3']);
+        this.load.audio('jump',['assets/soundDesign/Jump.mp3']);
+        this.load.audio('tirHF',['assets/soundDesign/TirHF.mp3']);
+        this.load.audio('tirSF',['assets/soundDesign/TirSF.mp3']);
+        this.load.audio('hitHF',['assets/soundDesign/HitHF.mp3']);
+        this.load.audio('hitSF',['assets/soundDesign/HitSF.mp3']);
+        this.load.audio('hitObstacle',['assets/soundDesign/HitObstacle.mp3']);
     }
 
 
@@ -175,8 +176,11 @@ class playGame extends Phaser.Scene{
 
 
     create(){
-        var music = this.sound.add('main');
-        music.play();
+        this.musicHF = this.sound.add('musicHF');
+        this.musicHF.play();
+        this.musicSF = this.sound.add('musicSF');
+        this.musicSF.play();
+        this.musicSF.setMute(true);
 
         // group with all active platforms.
         this.platformGroup = this.add.group({
@@ -208,7 +212,7 @@ class playGame extends Phaser.Scene{
         this.addPlatform(game.config.width, game.config.width / 2);
  
         // adding the player;
-        this.player = this.physics.add.sprite(gameOptions.playerStartPosition, game.config.height / 2, "lisbeicourse");
+        this.player = this.physics.add.sprite(gameOptions.playerStartPosition, 712, "lisbeicourse");
         this.player.setGravityY(gameOptions.playerGravity);
         this.player.penalty=0;
         this.player.sliding=0;
@@ -243,7 +247,7 @@ class playGame extends Phaser.Scene{
         this.otherkeys = this.input.keyboard.addKeys('TAB,S,F');
 
         this.mana=0;
-        this.manaText = this.add.text(16, 16, 'manaW/h : 0', { fontSize: '32px', fill: '#000' });
+        //this.manaText = this.add.text(16, 16, 'manaW/h : 0', { fontSize: '32px', fill: '#000' });
  
         this.killing=false;
         this.generateColliders();
@@ -365,10 +369,14 @@ class playGame extends Phaser.Scene{
         if ((paddle.L2||this.input.keyboard.checkDown(this.otherkeys.TAB,1000))&&!this.swap){
             this.swap=true;
             this.enableSFWorld();
+            this.musicHF.setMute(true);
             this.sound.add("swap").play();
+            this.musicSF.setMute(false);
         }else if ((paddle.R2||this.input.keyboard.checkDown(this.cursors.shift,1000))&&this.swap){
             this.swap=false;
+            this.musicSF.setMute(true);
             this.enableFantasyWorld();
+            this.musicHF.setMute(false);
             this.sound.add("swap").play();
         }
 
@@ -404,7 +412,7 @@ class playGame extends Phaser.Scene{
                          &&(child.body.position.x - child.scene.player.body.position.x <= 3*child.scene.tempo/2))){
                             console.log(child.disableBody(true, true));
                             child.scene.mana-=10;
-                            child.scene.manaText.setText('manaW/h : ' + child.scene.mana);
+                            //child.scene.manaText.setText('manaW/h : ' + child.scene.mana);
                             child.scene.killing=true;
                 }
             });  
@@ -415,7 +423,7 @@ class playGame extends Phaser.Scene{
     collectStar(player, star){
         star.disableBody(true, true);
         this.mana += 10;
-        this.manaText.setText('manaW/h : ' + this.mana);
+        //this.manaText.setText('manaW/h : ' + this.mana);
     }
 
     hitEnemy(player,enemy){
@@ -456,7 +464,7 @@ class playGame extends Phaser.Scene{
                 slideEnemy.setGravityY(gameOptions.playerGravity);
             break;
             case "atk":
-            let enemy = this.enemies.create(gameOptions.playerStartPosition+this.tempo*8, 715, 'goblin').setScale(0.25).refreshBody();
+            let enemy = this.enemies.create(gameOptions.playerStartPosition+this.tempo*8, 715, 'goblin').setScale(0.4).refreshBody();
                 enemy.setVelocityX(0);
                 enemy.setFlipX(true);
                 enemy.setGravityY(gameOptions.playerGravity);
