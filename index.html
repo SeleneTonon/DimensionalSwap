@@ -262,13 +262,10 @@ class playGame extends Phaser.Scene{
         this.otherkeys = this.input.keyboard.addKeys('TAB,S,F');
 
         this.mana=0;
-        this.manaText = this.add.text(16, 16, 'Mana : 0', { fontSize: '32px', fill: '#000' });
-        this.kwh=0;
-        this.kwhText = this.add.text(16, 48, 'kW/h : 0', { fontSize: '32px', fill: '#000' });
+        this.manaText = this.add.text(16, 16, 'manaW/h : 0', { fontSize: '32px', fill: '#000' });
  
+        this.killing=false;
         this.generateColliders();
-        
-
         this.i =0;
         // checking for input
         //this.input.on("pointerdown", this.jump, this);
@@ -371,38 +368,24 @@ class playGame extends Phaser.Scene{
             }
         });  
         
-
+        if(!paddle.X&&!paddle.Y) this.killing=false;
 
         if (this.cursors.up.isDown||paddle.A){this.jump();}
         if (this.cursors.down.isDown||paddle.B){this.slide();}
-        if (paddle.X||this.input.keyboard.checkDown(this.otherkeys.F,1000)){
-            this.enemies.children.iterate(function (child) {
-                console.log(child);
-            if((child.body.position.x > child.scene.player.body.position.x)
-                &&((child.body.position.x - child.scene.player.body.position.x >= child.scene.tempo/2)
-                         &&(child.body.position.x - child.scene.player.body.position.x <= 3*child.scene.tempo/2))){
-                            console.log(child.disableBody(true, true));
-                }
-            });            
+        if (!this.killing&&(paddle.X||this.input.keyboard.checkDown(this.otherkeys.S,1000))&&this.mana>0){
+            this.killEnemy();          
         }
-        if (paddle.Y||this.input.keyboard.checkDown(this.otherkeys.S,1000)){
-            this.enemies.children.iterate(function (child) {
-                console.log(child);
-            if((child.body.position.x > child.scene.player.body.position.x)
-                &&((child.body.position.x - child.scene.player.body.position.x >= child.scene.tempo/2)
-                         &&(child.body.position.x - child.scene.player.body.position.x <= 3*child.scene.tempo/2))){
-                            console.log(child.disableBody(true, true));
-                }
-            });            
+        if (!this.killing&&(paddle.Y||this.input.keyboard.checkDown(this.otherkeys.F,1000))&&this.mana>0){
+            this.killEnemy();     
         }
         
 
         
-        if ((paddle.R2||this.input.keyboard.checkDown(this.otherkeys.TAB,1000))&&!this.swap){
+        if ((paddle.L2||this.input.keyboard.checkDown(this.otherkeys.TAB,1000))&&!this.swap){
             this.swap=true;
             this.enableSFWorld();
             this.sound.add("swap").play();
-        }else if ((paddle.L2||this.input.keyboard.checkDown(this.cursors.shift,1000))&&this.swap){
+        }else if ((paddle.R2||this.input.keyboard.checkDown(this.cursors.shift,1000))&&this.swap){
             this.swap=false;
             this.enableFantasyWorld();
             this.sound.add("swap").play();
@@ -426,11 +409,26 @@ class playGame extends Phaser.Scene{
         }
     }
 
+    killEnemy(){
+        this.enemies.children.iterate(function (child) {
+                console.log(child);
+            if((child.body.position.x > child.scene.player.body.position.x)
+                &&((child.body.position.x - child.scene.player.body.position.x >= child.scene.tempo/2)
+                         &&(child.body.position.x - child.scene.player.body.position.x <= 3*child.scene.tempo/2))){
+                            console.log(child.disableBody(true, true));
+                            child.scene.mana-=10;
+                            child.scene.manaText.setText('manaW/h : ' + child.scene.mana);
+                            child.scene.killing=true;
+                }
+            });  
+    }
+    
+
 
     collectStar(player, star){
         star.disableBody(true, true);
         this.mana += 10;
-        this.manaText.setText('Mana: ' + this.mana);
+        this.manaText.setText('manaW/h : ' + this.mana);
     }
 
     hitEnemy(player,enemy){
