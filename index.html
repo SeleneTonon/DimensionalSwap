@@ -121,7 +121,7 @@ class playGame extends Phaser.Scene{
  
         // adding the player;
         this.player = this.physics.add.sprite(gameOptions.playerStartPosition, game.config.height / 2, "player");
-        this.player.setScale(3);
+        this.player.setScale(3).refreshBody();
         this.player.setGravityY(gameOptions.playerGravity);
         //this.player.setCollideWorldBounds(true);
 
@@ -139,10 +139,24 @@ class playGame extends Phaser.Scene{
             frameRate: 10,repeat: -1
         });
 
+        this.stars = this.physics.add.group({
+            key: 'star',repeat: 2,setXY: { x: 600, y: 780, stepX: 500 }
+        });
+        this.stars.children.iterate(function (child) {
+            child.setScale(3).refreshBody();
+            child.setGravityY(gameOptions.playerGravity);
+        });
+
         this.cursors = this.input.keyboard.createCursorKeys();
+        this.score=0;
+        this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
  
-        // setting collisions between the player and the platform group
         this.physics.add.collider(this.player, this.platformGroup);
+        this.physics.add.collider(this.stars, this.platformGroup);
+        this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
+
+        
+        console.log(this.stars);
  
         // checking for input
         //this.input.on("pointerdown", this.jump, this);
@@ -176,7 +190,6 @@ class playGame extends Phaser.Scene{
 
     update(){
         this.input.gamepad.once('connected', function (pad) { paddle=pad; });
-        console.log(this);
 
         if (this.gameOver){
             return;
@@ -188,6 +201,13 @@ class playGame extends Phaser.Scene{
             this.foreground.tilePositionX += 2;
             this.bushes.tilePositionX +=2;
             this.player.anims.play('right', true);
+
+            if(this.player.body.touching.down){
+                this.player.setVelocityX(gameOptions.platformStartSpeed);
+            }
+            else{
+                this.player.setVelocityX(0);
+            }
         }
 
 
@@ -207,7 +227,7 @@ class playGame extends Phaser.Scene{
         if(this.player.y > game.config.height){
             this.scene.start("PlayGame");
         }
-        this.player.x = gameOptions.playerStartPosition;
+        //this.player.x = gameOptions.playerStartPosition;
  
         // recycling platforms
         let minDistance = game.config.width;
@@ -226,8 +246,14 @@ class playGame extends Phaser.Scene{
             this.addPlatform(nextPlatformWidth, game.config.width + nextPlatformWidth / 2);
         }
     }
-};
 
+
+    collectStar(player, star){
+        star.disableBody(true, true);
+        this.score += 10;
+        this.scoreText.setText('Score: ' + this.score);
+    }
+};
 
 function resize(){
     let canvas = document.querySelector("canvas");
