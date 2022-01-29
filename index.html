@@ -62,6 +62,7 @@ class intro extends Phaser.Scene{
         console.log("test2");
     }
     create(){
+        this.add.text(200, 200, 'Click to play', { fontSize: '50px', fill: '#000' });
         this.input.on("pointerdown", this.startplaygame, this);
     }
     
@@ -105,6 +106,13 @@ class playGame extends Phaser.Scene{
         this.load.spritesheet('player', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
         this.load.spritesheet('goblin', 'assets/gobelins2.png', { frameWidth: 572, frameHeight: 528 });
         this.load.audio('main',['assets/MEDPROJECTTest.wav','assets/MEDPROJECTTest.aif']);
+        this.load.audio('swap',['assets/soundDesign/Swap.wav']);
+        this.load.audio('jump',['assets/soundDesign/Jump.wav']);
+        this.load.audio('tirHF',['assets/soundDesign/TirHF.wav']);
+        this.load.audio('tirSF',['assets/soundDesign/TirSF.wav']);
+        this.load.audio('hitHF',['assets/soundDesign/HitHF.wav']);
+        this.load.audio('hitSF',['assets/soundDesign/HitSF.wav']);
+        this.load.audio('hitObstacle',['assets/soundDesign/HitObstacle.wav']);
     }
 
 
@@ -174,8 +182,6 @@ class playGame extends Phaser.Scene{
     create(){
         var music = this.sound.add('main');
         music.play();
-        this.sound.pauseOnBlur=false;
-        console.log(this.sound);
 
         // group with all active platforms.
         this.platformGroup = this.add.group({
@@ -253,6 +259,7 @@ class playGame extends Phaser.Scene{
         this.slideEnemy.setGravityY(gameOptions.playerGravity);
 
         this.cursors = this.input.keyboard.createCursorKeys();
+        this.otherkeys = this.input.keyboard.addKeys('TAB,S,F');
         this.score=0;
         this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
  
@@ -293,12 +300,15 @@ class playGame extends Phaser.Scene{
     jump(){
         if(this.player.body.touching.down&&this.player.sliding==0){
             this.player.setVelocityY(gameOptions.jumpForce * -1);
+            this.sound.add("jump").play();
         }
+        
     }
 
     slide(){
         if(this.player.body.touching.down&&this.player.sliding==0){
             this.player.sliding=32;
+            //this.sound.add("slide").play();
         }
     }
 
@@ -356,7 +366,7 @@ class playGame extends Phaser.Scene{
 
         if (this.cursors.up.isDown||paddle.A){this.jump();}
         if (this.cursors.down.isDown||paddle.B){this.slide();}
-        if (paddle.X){
+        if (paddle.X||this.input.keyboard.checkDown(this.otherkeys.F,1000)){
             this.enemies.children.iterate(function (child) {
                 console.log(child);
             if((child.body.position.x > child.scene.player.body.position.x)
@@ -366,7 +376,7 @@ class playGame extends Phaser.Scene{
                 }
             });            
         }
-        if (paddle.Y){
+        if (paddle.Y||this.input.keyboard.checkDown(this.otherkeys.S,1000)){
             this.enemies.children.iterate(function (child) {
                 console.log(child);
             if((child.body.position.x > child.scene.player.body.position.x)
@@ -377,14 +387,16 @@ class playGame extends Phaser.Scene{
             });            
         }
         
+
         
-        if (paddle.R2){
+        if (paddle.R2||(this.input.keyboard.checkDown(this.otherkeys.TAB,1000))&&!this.swap){
             this.swap=true;
             this.enableSFWorld();
-        }
-        if (paddle.L2){
+            this.sound.add("swap").play();
+        }else if (paddle.L2||(this.input.keyboard.checkDown(this.cursors.shift,1000))&&this.swap){
             this.swap=false;
             this.enableFantasyWorld();
+            this.sound.add("swap").play();
         }
 
         // recycling platforms
