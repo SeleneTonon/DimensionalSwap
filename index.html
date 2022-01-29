@@ -232,25 +232,12 @@ class playGame extends Phaser.Scene{
             frameRate: 10,repeat: 0
         });
 
-        this.stars = this.physics.add.group({
-            key: 'star',repeat: 4,setXY: { x: gameOptions.playerStartPosition+this.tempo*5, y: 780, stepX: 2*this.tempo }
-        });
-        this.stars.children.iterate(function (child) {
-            child.setScale(3).refreshBody();
-            child.setGravityY(gameOptions.playerGravity);
-        });
+        this.stars = this.physics.add.group();
+        
 
         this.enemies = this.physics.add.group();
-        this.enemy = this.enemies.create(gameOptions.playerStartPosition+this.tempo*4, 715, 'goblin').setScale(0.4).refreshBody();
-        this.enemy.setVelocityX(0);
-        this.enemy.setFlipX(true);
-        this.enemy.setGravityY(gameOptions.playerGravity);
 
         this.slideEnemies = this.physics.add.group();
-        this.slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*6, 765, 'bomb').setScale(3).refreshBody();
-        this.slideEnemy.setVelocityX(0);
-        this.slideEnemy.setFlipX(true);
-        this.slideEnemy.setGravityY(gameOptions.playerGravity);
 
         this.cursors = this.input.keyboard.createCursorKeys();
         this.otherkeys = this.input.keyboard.addKeys('TAB,S,F');
@@ -458,7 +445,7 @@ class playGame extends Phaser.Scene{
                 jumpEnemy.setGravityY(gameOptions.playerGravity);
             break;
             case "mana":
-            let star = this.stars.create(gameOptions.playerStartPosition+this.tempo*8, 765, 'star').setScale(3).refreshBody();
+            let star = this.stars.create(gameOptions.playerStartPosition+this.tempo*8, 780, 'star').setScale(3).refreshBody();
                 star.setVelocityX(0);
                 star.setGravityY(gameOptions.playerGravity);
             break;
