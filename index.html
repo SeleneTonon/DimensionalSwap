@@ -34,7 +34,7 @@ window.onload = function() {
         type: Phaser.AUTO,
         width: 1920,
         height: 1080,
-        scene: playGame,
+        scene: [intro,playGame],
         backgroundColor: 0x444444,
         input:{gamepad:true},
         // physics settings
@@ -47,13 +47,35 @@ window.onload = function() {
     resize();
     window.addEventListener("resize", resize, false);
 }
+
+
+class intro extends Phaser.Scene{
+    constructor(){
+        super("intro");
+    }
+    preload(){
+
+    }
+    startplaygame(){
+        console.log("test");
+        this.scene.start("PlayGame");
+        console.log("test2");
+    }
+    create(){
+        this.input.on("pointerdown", this.startplaygame, this);
+    }
+    
+    update(){
+        
+    }
+};
  
 // playGame scene
 class playGame extends Phaser.Scene{
     constructor(){
         super("PlayGame");
     }
-
+    init(){}
     preloadSF(){
         this.load.image('cielmauve', 'assets/background.png');
         this.load.image('sky', 'assets/ciel.png');
@@ -151,7 +173,9 @@ class playGame extends Phaser.Scene{
 
     create(){
         var music = this.sound.add('main');
-        //music.play();
+        music.play();
+        this.sound.pauseOnBlur=false;
+        console.log(this.sound);
 
         // group with all active platforms.
         this.platformGroup = this.add.group({
@@ -326,11 +350,34 @@ class playGame extends Phaser.Scene{
                     child.anims.play('goblinAtk', true);
                     child.attacked=true;
             }
-        });
+        });  
+        
 
 
         if (this.cursors.up.isDown||paddle.A){this.jump();}
         if (this.cursors.down.isDown||paddle.B){this.slide();}
+        if (paddle.X){
+            this.enemies.children.iterate(function (child) {
+                console.log(child);
+            if((child.body.position.x > child.scene.player.body.position.x)
+                &&((child.body.position.x - child.scene.player.body.position.x >= child.scene.tempo/2)
+                         &&(child.body.position.x - child.scene.player.body.position.x <= 3*child.scene.tempo/2))){
+                            console.log(child.disableBody(true, true));
+                }
+            });            
+        }
+        if (paddle.Y){
+            this.enemies.children.iterate(function (child) {
+                console.log(child);
+            if((child.body.position.x > child.scene.player.body.position.x)
+                &&((child.body.position.x - child.scene.player.body.position.x >= child.scene.tempo/2)
+                         &&(child.body.position.x - child.scene.player.body.position.x <= 3*child.scene.tempo/2))){
+                            console.log(child.disableBody(true, true));
+                }
+            });            
+        }
+        
+        
         if (paddle.R2){
             this.swap=true;
             this.enableSFWorld();
