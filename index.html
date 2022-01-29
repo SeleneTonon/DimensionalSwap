@@ -398,11 +398,11 @@ class playGame extends Phaser.Scene{
         
 
         
-        if (paddle.R2||(this.input.keyboard.checkDown(this.otherkeys.TAB,1000))&&!this.swap){
+        if ((paddle.R2||this.input.keyboard.checkDown(this.otherkeys.TAB,1000))&&!this.swap){
             this.swap=true;
             this.enableSFWorld();
             this.sound.add("swap").play();
-        }else if (paddle.L2||(this.input.keyboard.checkDown(this.cursors.shift,1000))&&this.swap){
+        }else if ((paddle.L2||this.input.keyboard.checkDown(this.cursors.shift,1000))&&this.swap){
             this.swap=false;
             this.enableFantasyWorld();
             this.sound.add("swap").play();
