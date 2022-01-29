@@ -34,7 +34,10 @@ window.onload = function() {
         input:{gamepad:true},
         // physics settings
         physics: {
-            default: "arcade"
+            default: "arcade",
+            arcade: {
+                debug: true
+            }
         }
     }
     game = new Phaser.Game(gameConfig);
@@ -177,8 +180,8 @@ class playGame extends Phaser.Scene{
 
     create(){
         this.musicHF = this.sound.add('musicHF');
-        this.musicHF.play();
         this.musicSF = this.sound.add('musicSF');
+        this.musicHF.play();
         this.musicSF.play();
         this.musicSF.setMute(true);
 
@@ -242,6 +245,8 @@ class playGame extends Phaser.Scene{
         this.enemies = this.physics.add.group();
 
         this.slideEnemies = this.physics.add.group();
+        let jumpEnemy=this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7, 815, 'bomb').setScale(3).refreshBody();
+        jumpEnemy.setVelocityX(-gameOptions.platformStartSpeed);
 
         this.cursors = this.input.keyboard.createCursorKeys();
         this.otherkeys = this.input.keyboard.addKeys('TAB,S,F');
@@ -259,10 +264,10 @@ class playGame extends Phaser.Scene{
     generateColliders(){
         this.physics.add.collider(this.player, this.platformGroup);
         this.physics.add.collider(this.stars, this.platformGroup);
-        this.physics.add.collider(this.enemies, this.platformGroup);
-        this.physics.add.collider(this.slideEnemies, this.platformGroup);
-        this.physics.add.collider(this.player, this.enemy,this.hitEnemy,this.checkEnemy,this);
-        this.physics.add.collider(this.player, this.slideEnemy,this.hitSlideEnemy,this.checkSlideEnemy,this);
+        //this.physics.add.collider(this.enemies, this.platformGroup);
+        //this.physics.add.collider(this.slideEnemies, this.platformGroup);
+        this.physics.add.overlap(this.player, this.enemy,this.hitEnemy,this.checkEnemy,this);
+        this.physics.add.overlap(this.player, this.slideEnemy,this.hitSlideEnemy,this.checkSlideEnemy,this);
         this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
     }
  
@@ -394,7 +399,7 @@ class playGame extends Phaser.Scene{
         // adding new platforms
         if(minDistance >= this.nextPlatformDistance){
             var nextPlatformWidth = gameOptions.platformSizeRange[1];//Phaser.Math.Between(gameOptions.platformSizeRange[0], gameOptions.platformSizeRange[1]);
-            this.addPlatform(nextPlatformWidth, game.config.width + nextPlatformWidth / 2);
+            this.addPlatform(517, game.config.width + nextPlatformWidth / 2);
         }
 
         if(this.nbFrame%32==0){
@@ -432,6 +437,7 @@ class playGame extends Phaser.Scene{
         enemy.setVelocityX(0);
     }
     checkEnemy(player,enemy){
+        console.log("test enemy");
         return !enemy.inoffensif;
     }
 
@@ -441,6 +447,7 @@ class playGame extends Phaser.Scene{
         enemy.setVelocityX(0);
     }
     checkSlideEnemy(player,enemy){
+        console.log("test2 slide enemy");
         return (!enemy.inoffensif)&&player.sliding==0;
     }
 
@@ -448,26 +455,30 @@ class playGame extends Phaser.Scene{
         this.nbTempo++;
         switch(gameOptions.levelGenerator[this.nbTempo]){
             case "jump":
-            let jumpEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*8, 765, 'bomb').setScale(3).refreshBody();
-                jumpEnemy.setVelocityX(0);
-                jumpEnemy.setGravityY(gameOptions.playerGravity);
+            let jumpEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7, 815, 'bomb').setScale(3).refreshBody();
+                jumpEnemy.setVelocityX(-gameOptions.platformStartSpeed);
+            //    jumpEnemy.setGravityY(gameOptions.playerGravity);
+                console.log("jump generated");
             break;
             case "mana":
-            let star = this.stars.create(gameOptions.playerStartPosition+this.tempo*8, 780, 'star').setScale(3).refreshBody();
+            let star = this.stars.create(gameOptions.playerStartPosition+this.tempo*7, 780, 'star').setScale(3).refreshBody();
                 star.setVelocityX(0);
                 star.setGravityY(gameOptions.playerGravity);
+                console.log("star generated");
             break;
             case "slide":
-            let slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*8, 765, 'bomb').setScale(3).refreshBody();
-                slideEnemy.setVelocityX(0);
+            let slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7, 815, 'bomb').setScale(3).refreshBody();
+                slideEnemy.setVelocityX(-gameOptions.platformStartSpeed);
                 slideEnemy.setTint(0xff0000);
-                slideEnemy.setGravityY(gameOptions.playerGravity);
+            //    slideEnemy.setGravityY(gameOptions.playerGravity);
+                console.log("slide generated");
             break;
             case "atk":
-            let enemy = this.enemies.create(gameOptions.playerStartPosition+this.tempo*8, 715, 'goblin').setScale(0.4).refreshBody();
-                enemy.setVelocityX(0);
+            let enemy = this.enemies.create(gameOptions.playerStartPosition+this.tempo*7, 715, 'goblin').setScale(0.4).refreshBody();
+                enemy.setVelocityX(-gameOptions.platformStartSpeed);
                 enemy.setFlipX(true);
-                enemy.setGravityY(gameOptions.playerGravity);
+            //    enemy.setGravityY(gameOptions.playerGravity);
+                console.log("atk generated");
             break;
         }
     }
