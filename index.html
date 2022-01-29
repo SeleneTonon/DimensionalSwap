@@ -65,6 +65,15 @@ class playGame extends Phaser.Scene{
         this.load.image("mountains", "assets/montagne.png");
         this.load.image("bushes", "assets/buisson.png");
         this.load.audio('main',['assets/MEDPROJECTTest.wav','assets/MEDPROJECTTest.aif']);
+        this.load.image('cielmauve', 'assets/background.png');
+        this.load.image('sky', 'assets/ciel.png');
+        this.load.image('building1', 'assets/immeuble1.png');
+        this.load.image('building2', 'assets/immeuble2.png');
+        this.load.image('building3', 'assets/immeuble3.png');
+        this.load.image('luminaire', 'assets/luminaire.png');
+        this.load.image('lunes', 'assets/lunes.png');
+        this.load.image('sol', 'assets/sol.png');
+        this.load.image('SFground', 'assets/hitbox.png');
     }
 
 
@@ -76,14 +85,36 @@ class playGame extends Phaser.Scene{
         this.bushes = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "bushes");
         this.foreground = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "foreground");
     }
+    setSFWorld(){
+        this.cielmauve = this.add.image(game.config.width/2, game.config.height/2, 'cielmauve');
+        this.lunes = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "lunes");
+        this.building3 = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "building3");
+        this.building2 = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "building2");
+        this.building1 = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "building1");
+        this.luminaire = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "luminaire");
+        this.sol = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "sol");
+   }
 
-    disableFantasyWorld(){
+    enableSFWorld(){
         this.sky.setVisible(false);
         this.cloudsWhite.setVisible(false);
         this.cloudsWhiteSmall.setVisible(false);
         this.mountains.setVisible(false);
         this.bushes.setVisible(false);
         this.foreground.setVisible(false);
+        this.cielmauve.setVisible(true);
+        this.lunes.setVisible(true);
+        this.building3.setVisible(true);
+        this.building2.setVisible(true);
+        this.building1.setVisible(true);
+        this.luminaire.setVisible(true);
+        this.sol.setVisible(true);
+        this.platformGroup.children.iterate(function (child) {
+            child.setTexture("SFground");
+        });
+        this.platformPool.children.iterate(function (child) {
+            child.setTexture("SFground");
+        });
     }
 
     enableFantasyWorld(){
@@ -93,11 +124,24 @@ class playGame extends Phaser.Scene{
         this.mountains.setVisible(true);
         this.bushes.setVisible(true);
         this.foreground.setVisible(true);
+        this.cielmauve.setVisible(false);
+        this.building1.setVisible(false);
+        this.building2.setVisible(false);
+        this.building3.setVisible(false);
+        this.luminaire.setVisible(false);
+        this.lunes.setVisible(false);
+        this.sol.setVisible(false);
+        this.platformGroup.children.iterate(function (child) {
+            child.setTexture("ground");
+        });
+        this.platformPool.children.iterate(function (child) {
+            child.setTexture("ground");
+        });
     }
 
 
     create(){
-        this.setFantasyWorld();
+        
 
         var music = this.sound.add('main');
         music.play();
@@ -117,6 +161,10 @@ class playGame extends Phaser.Scene{
                 platform.scene.platformGroup.add(platform)
             }
         });
+
+        this.setFantasyWorld();
+        this.setSFWorld();
+        this.enableFantasyWorld();
  
         // est-on dans le monde alternatif ? au début, non
         this.swap = false;
@@ -146,12 +194,16 @@ class playGame extends Phaser.Scene{
         });
 
         this.stars = this.physics.add.group({
-            key: 'star',repeat: 4,setXY: { x: 600, y: 780, stepX: 2*this.tempo }
+            key: 'star',repeat: 4,setXY: { x: gameOptions.playerStartPosition+this.tempo*5, y: 780, stepX: 2*this.tempo }
         });
         this.stars.children.iterate(function (child) {
             child.setScale(3).refreshBody();
             child.setGravityY(gameOptions.playerGravity);
         });
+
+        this.enemies = this.physics.add.group();
+        this.enemy = this.enemies.create(gameOptions.playerStartPosition+this.tempo*4, 780, 'bomb').setScale(3).refreshBody();
+        this.enemy.setVelocityX(-1*gameOptions.platformStartSpeed);
 
         this.cursors = this.input.keyboard.createCursorKeys();
         this.score=0;
@@ -159,6 +211,7 @@ class playGame extends Phaser.Scene{
  
         this.physics.add.collider(this.player, this.platformGroup);
         this.physics.add.collider(this.stars, this.platformGroup);
+        this.physics.add.collider(this.player, this.hitEnemy);
         this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
 
         
@@ -177,7 +230,8 @@ class playGame extends Phaser.Scene{
             this.platformPool.remove(platform);
         }
         else{
-            platform = this.physics.add.sprite(posX, 840, "ground");
+            if(this.swap){platform = this.physics.add.sprite(posX, 840, "SFground");}
+            else{platform = this.physics.add.sprite(posX, 840, "ground");}
             platform.setImmovable(true);
             platform.setVelocityX(gameOptions.platformStartSpeed * -1);
             this.platformGroup.add(platform);
@@ -199,9 +253,18 @@ class playGame extends Phaser.Scene{
             return;
         }
         else{ //défilement
-            this.cloudsWhite.tilePositionX += 0.5;
+            
             this.cloudsWhiteSmall.tilePositionX += 0.25;
             this.mountains.tilePositionX += 0.25;
+            this.building3.tilePositionX +=0.25;
+
+            this.cloudsWhite.tilePositionX += 0.5;
+            this.building2.tilePositionX += 0.5;
+
+            this.building1.tilePositionX += 1;
+
+            this.luminaire.tilePositionX += 4;
+            this.sol.tilePositionX +=4;
             this.foreground.tilePositionX += 4;
             this.bushes.tilePositionX +=4;
             this.player.anims.play('right', true);
@@ -217,12 +280,10 @@ class playGame extends Phaser.Scene{
 
         if (this.cursors.up.isDown||paddle.A){this.jump();}
         if (paddle.R2){
-            //this.sky.setTint(0xff0000);
             this.swap=true;
-            this.disableFantasyWorld();
+            this.enableSFWorld();
         }
         if (paddle.L2){
-            this.sky.setTint(0xffffff);
             this.swap=false;
             this.enableFantasyWorld();
         }
