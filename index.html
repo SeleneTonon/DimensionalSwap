@@ -20,7 +20,7 @@ let paddle = {A:false,B:false,X:false,Y:false,up:false,down:false,left:false,rig
  
 // global game options
 let gameOptions = {
-    platformStartSpeed: 350,
+    platformStartSpeed: 360,
     spawnRange: [100, 350],
     platformSizeRange: [50, 250],
     playerGravity: 900,
@@ -64,6 +64,7 @@ class playGame extends Phaser.Scene{
         this.load.image("foreground", "assets/1erplan.png");
         this.load.image("mountains", "assets/montagne.png");
         this.load.image("bushes", "assets/buisson.png");
+        this.load.audio('main',['assets/MEDPROJECTTest.wav','assets/MEDPROJECTTest.aif']);
     }
 
 
@@ -97,6 +98,10 @@ class playGame extends Phaser.Scene{
 
     create(){
         this.setFantasyWorld();
+
+        var music = this.sound.add('main');
+        music.play();
+
         // group with all active platforms.
         this.platformGroup = this.add.group({
             // once a platform is removed, it's added to the pool
@@ -115,6 +120,7 @@ class playGame extends Phaser.Scene{
  
         // est-on dans le monde alternatif ? au début, non
         this.swap = false;
+        this.tempo = 32*gameOptions.platformStartSpeed/60;
  
         // adding a platform to the game, the arguments are platform width and x position
         this.addPlatform(game.config.width, game.config.width / 2);
@@ -140,7 +146,7 @@ class playGame extends Phaser.Scene{
         });
 
         this.stars = this.physics.add.group({
-            key: 'star',repeat: 2,setXY: { x: 600, y: 780, stepX: 500 }
+            key: 'star',repeat: 4,setXY: { x: 600, y: 780, stepX: 2*this.tempo }
         });
         this.stars.children.iterate(function (child) {
             child.setScale(3).refreshBody();
@@ -156,8 +162,6 @@ class playGame extends Phaser.Scene{
         this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
 
         
-        console.log(this.stars);
- 
         // checking for input
         //this.input.on("pointerdown", this.jump, this);
     }
@@ -198,8 +202,8 @@ class playGame extends Phaser.Scene{
             this.cloudsWhite.tilePositionX += 0.5;
             this.cloudsWhiteSmall.tilePositionX += 0.25;
             this.mountains.tilePositionX += 0.25;
-            this.foreground.tilePositionX += 2;
-            this.bushes.tilePositionX +=2;
+            this.foreground.tilePositionX += 4;
+            this.bushes.tilePositionX +=4;
             this.player.anims.play('right', true);
 
             if(this.player.body.touching.down){
