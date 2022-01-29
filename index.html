@@ -260,9 +260,21 @@ class playGame extends Phaser.Scene{
 
         this.cursors = this.input.keyboard.createCursorKeys();
         this.otherkeys = this.input.keyboard.addKeys('TAB,S,F');
-        this.score=0;
-        this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+
+        this.mana=0;
+        this.manaText = this.add.text(16, 16, 'Mana : 0', { fontSize: '32px', fill: '#000' });
+        this.kwh=0;
+        this.kwhText = this.add.text(16, 48, 'kW/h : 0', { fontSize: '32px', fill: '#000' });
  
+        this.generateColliders();
+        
+
+        this.i =0;
+        // checking for input
+        //this.input.on("pointerdown", this.jump, this);
+    }
+
+    generateColliders(){
         this.physics.add.collider(this.player, this.platformGroup);
         this.physics.add.collider(this.stars, this.platformGroup);
         this.physics.add.collider(this.enemies, this.platformGroup);
@@ -270,10 +282,6 @@ class playGame extends Phaser.Scene{
         this.physics.add.collider(this.player, this.enemy,this.hitEnemy,this.checkEnemy,this);
         this.physics.add.collider(this.player, this.slideEnemy,this.hitSlideEnemy,this.checkSlideEnemy,this);
         this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
-
-        
-        // checking for input
-        //this.input.on("pointerdown", this.jump, this);
     }
  
     // the core of the script: platform are added from the pool or created on the fly
@@ -313,6 +321,7 @@ class playGame extends Phaser.Scene{
     }
 
     update(){
+        if(!this.player.body.touching.down){console.log(this.i++)}
         this.input.gamepad.once('connected', function (pad) { paddle=pad; });
 
         if (this.gameOver){
@@ -420,8 +429,8 @@ class playGame extends Phaser.Scene{
 
     collectStar(player, star){
         star.disableBody(true, true);
-        this.score += 10;
-        this.scoreText.setText('Score: ' + this.score);
+        this.mana += 10;
+        this.manaText.setText('Mana: ' + this.mana);
     }
 
     hitEnemy(player,enemy){
