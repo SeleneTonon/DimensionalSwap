@@ -25,7 +25,7 @@ let gameOptions = {
     platformSizeRange: [50, 250],
     playerGravity: 900,
     jumpForce: 600,
-    playerStartPosition: 200,
+    playerStartPosition: 3*32*360/60,
 }
  
 window.onload = function() {
@@ -54,6 +54,8 @@ class playGame extends Phaser.Scene{
         super("PlayGame");
     }
     preload(){
+        //this.preloadSF();
+        //this.preloadFantasy();
         this.load.image('sky', 'assets/ciel.png');
         this.load.image('ground', 'assets/hitboxMarche.png');
         this.load.image('star', 'assets/star.png');
@@ -177,6 +179,7 @@ class playGame extends Phaser.Scene{
         this.player = this.physics.add.sprite(gameOptions.playerStartPosition, game.config.height / 2, "player");
         this.player.setScale(3).refreshBody();
         this.player.setGravityY(gameOptions.playerGravity);
+        this.player.penalty=0;
         //this.player.setCollideWorldBounds(true);
 
         this.anims.create({
@@ -211,7 +214,7 @@ class playGame extends Phaser.Scene{
  
         this.physics.add.collider(this.player, this.platformGroup);
         this.physics.add.collider(this.stars, this.platformGroup);
-        this.physics.add.collider(this.player, this.hitEnemy);
+        this.physics.add.collider(this.player, this.enemy,this.hitEnemy,this.checkEnemy,this);
         this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
 
         
@@ -270,7 +273,12 @@ class playGame extends Phaser.Scene{
             this.player.anims.play('right', true);
 
             if(this.player.body.touching.down){
-                this.player.setVelocityX(gameOptions.platformStartSpeed);
+                if(this.player.penalty>0) {
+                    this.player.penalty--;
+                    this.player.setVelocityX(0);
+                    console.log(this.player.penalty);
+                }
+                else this.player.setVelocityX(gameOptions.platformStartSpeed);
             }
             else{
                 this.player.setVelocityX(0);
@@ -317,6 +325,15 @@ class playGame extends Phaser.Scene{
         star.disableBody(true, true);
         this.score += 10;
         this.scoreText.setText('Score: ' + this.score);
+    }
+    hitEnemy(player,enemy){
+        player.penalty=32;
+        enemy.inoffensif=true;
+        enemy.setVelocityX(-1*gameOptions.platformStartSpeed);
+    }
+
+    checkEnemy(player,enemy){
+        return !enemy.inoffensif;
     }
 };
 
