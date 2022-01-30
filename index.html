@@ -260,7 +260,7 @@ class playGame extends Phaser.Scene{
         // adding the player;
         this.player = this.physics.add.sprite(gameOptions.playerStartPosition, 712, "lisbeicourse");
         this.player.setGravityY(gameOptions.playerGravity);
-        this.player.penalty=-32;
+        this.player.penalty=-16;
         this.player.sliding=0;
         this.boss = this.physics.add.sprite(80,580,"boss");
         this.boss.setGravityY(0);
@@ -422,7 +422,7 @@ class playGame extends Phaser.Scene{
                     this.player.penalty--;
                     this.player.setVelocityX(0);
                 }else if(this.player.penalty<0) {
-                    this.player.penalty++;
+                    this.player.penalty+=0.5;
                     this.player.setVelocityX(3*gameOptions.platformStartSpeed/2);
                 }
                 else {
@@ -466,26 +466,29 @@ class playGame extends Phaser.Scene{
         if (!this.killing&&(paddle.X||this.input.keyboard.checkDown(this.otherkeys.S,1000))&&this.manaBar.value>0){
             this.killEnemy();          
         }
-        if (!this.killing&&(paddle.Y||this.input.keyboard.checkDown(this.otherkeys.F,1000))&&this.manaBar.value>0){
-            this.killEnemy();     
+        if (this.penalty==0&&(paddle.Y||this.input.keyboard.checkDown(this.otherkeys.F,1000))&&this.manaBar.value>25){
+            this.penalty=-16;
+            this.setManaValue(this.manaBar.value-50);     
         }
         
 
         
-        if ((paddle.L2||this.input.keyboard.checkDown(this.otherkeys.TAB,1000))&&!this.swap){
+        if (this.manaBar.value>25&&(paddle.L2||this.input.keyboard.checkDown(this.otherkeys.TAB,1000))&&!this.swap){
             this.swap=true;
             this.enableSFWorld();
             this.enableSFWallAndEnemies();
             this.musicHF.setMute(true);
             this.sound.add("swap").play();
             this.musicSF.setMute(false);
-        }else if ((paddle.R2||this.input.keyboard.checkDown(this.cursors.shift,1000))&&this.swap){
+            this.setManaValue(this.manaBar.value-50);
+        }else if (this.manaBar.value>25&&(paddle.R2||this.input.keyboard.checkDown(this.cursors.shift,1000))&&this.swap){
             this.swap=false;
             this.musicSF.setMute(true);
             this.enableFantasyWorld();
             this.enableFantasyWallAndEnemies();
             this.musicHF.setMute(false);
             this.sound.add("swap").play();
+            this.setManaValue(this.manaBar.value-50);
         }
 
         this.generatePlatforms();
