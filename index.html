@@ -104,6 +104,7 @@ class playGame extends Phaser.Scene{
         this.load.image('bomb', 'assets/bomb.png');
         this.load.spritesheet('goblin', 'assets/gobelins2.png', { frameWidth: 572, frameHeight: 528 });
         this.load.spritesheet('lisbeicourse', 'assets/lisbeicourse.png', { frameWidth: 181, frameHeight: 232 });
+        this.load.spritesheet('beat', 'assets/shock.png', { frameWidth: 64, frameHeight: 64 });
         this.load.audio('musicHF',['assets/music/MorceauHF.mp3']);
         this.load.audio('musicSF',['assets/music/MorceauSF.mp3']);
         this.load.audio('swap',['assets/soundDesign/Swap.mp3']);
@@ -206,6 +207,13 @@ class playGame extends Phaser.Scene{
         this.tempo = 32*gameOptions.platformStartSpeed/60;
         this.nbFrame=0;
         this.nbTempo=0;
+
+        this.beat = this.add.sprite(800,900,"beat");
+        this.anims.create({
+            key: 'rythme',
+            frames: this.anims.generateFrameNumbers('beat', { start: 0, end: 32 }),
+            frameRate: 30,repeat: -1
+        });
  
         // adding a platform to the game, the arguments are platform width and x position
         this.addPlatform(game.config.width, game.config.width / 2);
@@ -367,6 +375,7 @@ class playGame extends Phaser.Scene{
             }
         }
 
+        this.beat.anims.play('rythme', true);
 
         this.enemies.children.iterate(function (child) {
             if((child.body.position.x - child.scene.player.body.position.x <= child.scene.tempo)
