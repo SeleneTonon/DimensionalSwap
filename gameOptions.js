@@ -6,7 +6,7 @@ let gameOptions = {
     jumpForce: 750,
     playerStartPosition: 3*32*360/60,
     levelGenerator:{
-        2:"jump",
+        1:"jump",
         5:"atk",
         9:"jump",
         18:"slide",
