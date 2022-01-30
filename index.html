@@ -463,8 +463,8 @@ class playGame extends Phaser.Scene{
         if (!this.killing&&(paddle.X||this.input.keyboard.checkDown(this.otherkeys.S,1000))&&this.manaBar.value>0){
             this.killEnemy();          
         }
-        if (this.penalty==0&&(paddle.Y||this.input.keyboard.checkDown(this.otherkeys.F,1000))&&this.manaBar.value>25){
-            this.penalty=-16;
+        if (this.player.penalty==0&&(paddle.Y||this.input.keyboard.checkDown(this.otherkeys.F,1000))&&this.manaBar.value>25){
+            this.player.penalty=-16;
             this.setManaValue(this.manaBar.value-50);     
         }
         
