@@ -32,18 +32,17 @@ let gameOptions = {
         114:"atk",
         116:"jump",
         118:"slide",
-        122:"slide",
-        123:"saut",
-        124:"tir",
+        121:"slide",
+        123:"tir",
         126:"murHF",
         126:"slide",
-        127:"jump",
-        128:"atk",
-        129:"atk",
-        130:"slide",
-        131:"jump",
+        128:"jump",
+        130:"atk",
         132:"atk",
-        133:"slide",
-        134:"atk"
+        134:"slide",
+        136:"jump",
+        138:"atk",
+        140:"slide",
+        142:"atk"
     }
 }
