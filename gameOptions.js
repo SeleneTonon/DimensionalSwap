@@ -4,7 +4,7 @@ let gameOptions = {
     platformSizeRange: [50, 250],
     playerGravity: 6500,
     jumpForce: 2000,
-    playerStartPosition: 6*16*360/60,
+    playerStartPosition: 400,
     levelGenerator:{
         10:"jump",
         18:"slide",
