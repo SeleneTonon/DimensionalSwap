@@ -16,6 +16,7 @@ let gameOptions = {
         45:"slide",
         49:"jump",
         58:"murHF",
+        69:"atk",
         74:"murSF",
         81:"atk",
         85:"atk",
