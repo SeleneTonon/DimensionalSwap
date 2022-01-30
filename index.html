@@ -110,7 +110,7 @@ class playGame extends Phaser.Scene{
         this.preloadSF();
         this.preloadFantasy();
         this.load.image('star', 'assets/star.png');
-        this.load.image('bomb', 'assets/bomb.png');
+        this.load.image('boss', 'assets/boss.png');
         this.load.spritesheet('lisbeicourse', 'assets/lisbeicourse.png', { frameWidth: 181, frameHeight: 232 });
         this.load.spritesheet('lisbeislide', 'assets/lisbeiglissade.png', { frameWidth: 280, frameHeight: 143 });
         this.load.spritesheet('beat', 'assets/shock.png', { frameWidth: 64, frameHeight: 64 });
@@ -260,9 +260,10 @@ class playGame extends Phaser.Scene{
         // adding the player;
         this.player = this.physics.add.sprite(gameOptions.playerStartPosition, 712, "lisbeicourse");
         this.player.setGravityY(gameOptions.playerGravity);
-        this.player.penalty=16;
+        this.player.penalty=-32;
         this.player.sliding=0;
-        //this.player.setCollideWorldBounds(true);
+        this.boss = this.physics.add.sprite(80,580,"boss");
+        this.boss.setGravityY(0);
 
         this.anims.create({
             key: 'slide',
@@ -306,7 +307,7 @@ class playGame extends Phaser.Scene{
         this.i =0;
         //this.input.on("pointerdown", this.jump, this);
  
-        this.manaBar=this.makeBar(140,300,0xFF0000);
+        this.manaBar=this.makeBar(800,300,0xFF0000);
         this.setManaValue(0);
         
         this.musicHF = this.sound.add('musicHF');
@@ -341,6 +342,7 @@ class playGame extends Phaser.Scene{
         this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
         this.physics.add.overlap(this.player, this.murHF, this.hitEnemy, this.notSwapped, this);
         this.physics.add.overlap(this.player, this.murSF, this.hitEnemy, this.swapped, this);
+        this.physics.add.overlap(this.player, this.boss, this.hitBoss, null, this);
     }
 
     swapped(){
@@ -419,6 +421,9 @@ class playGame extends Phaser.Scene{
                 if(this.player.penalty>0) {
                     this.player.penalty--;
                     this.player.setVelocityX(0);
+                }else if(this.player.penalty<0) {
+                    this.player.penalty++;
+                    this.player.setVelocityX(3*gameOptions.platformStartSpeed/2);
                 }
                 else {
                     if(this.player.sliding==1) { 
@@ -545,6 +550,10 @@ class playGame extends Phaser.Scene{
     hitEnemy(player,enemy){
         player.penalty=16;
         enemy.inoffensif=true;
+    }
+
+    hitBoss(player,boss){
+        this.gameOver=true;
     }
     checkEnemy(player,enemy){
         console.log("test enemy");
