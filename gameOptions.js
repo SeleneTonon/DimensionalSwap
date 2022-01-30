@@ -1,10 +1,10 @@
 let gameOptions = {
-    platformStartSpeed: 360,
+    platformStartSpeed: 720,
     spawnRange: [100, 350],
     platformSizeRange: [50, 250],
     playerGravity: 4000,
     jumpForce: 2000,
-    playerStartPosition: 3*32*360/60,
+    playerStartPosition: 3*32*720/60,
     levelGenerator:{
         9:"jump",
         18:"slide",
