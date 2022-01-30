@@ -260,16 +260,12 @@ class playGame extends Phaser.Scene{
     }
 
     makeBar(x, y,color) {
-        //draw the bar
+        this.combo=0;
         let bar = this.add.graphics();
-        //color the bar
         bar.fillStyle(color, 1);
-        //fill the bar with a rectangle
         bar.fillRect(0, 0, 200, 50);
-        //position the bar
         bar.x = x;
         bar.y = y;
-        //return the bar
         return bar;
     }
 
@@ -312,6 +308,7 @@ class playGame extends Phaser.Scene{
         if(this.player.body.touching.down&&this.player.sliding==0){
             this.player.setVelocityY(gameOptions.jumpForce * -1);
             this.sound.add("jump").play();
+            this.gainCombo();
         }
         
     }
@@ -321,6 +318,7 @@ class playGame extends Phaser.Scene{
             this.player.sliding=32*1.5;
             this.player.setTint(0x00ff00);
             //this.sound.add("slide").play();
+            this.gainCombo();
         }
     }
 
@@ -441,13 +439,23 @@ class playGame extends Phaser.Scene{
             if((child.body.position.x > child.scene.player.body.position.x)
                 &&(child.body.position.x - child.scene.player.body.position.x <= (181+512+child.scene.tempo)/2)){
                             console.log(child.disableBody(true, true));
-                            child.scene.manaBar.setManaValue(child.scene.manaBar.value-25);
+                            child.scene.setManaValue(child.scene.manaBar.value-25);
                             child.scene.killing=true;
+                            child.scene.gainCombo();
                 }
             });  
     }
-    
 
+    gainCombo(){
+        if(this.nbFrame>=24 || this.nbFrame<=8){
+            this.combo++;
+            //if(this.combo>0) 
+                this.setManaValue(this.manaBar.value+25)
+        }
+        else{
+            this.combo=0;
+        }
+    }
 
     collectStar(player, star){
         star.disableBody(true, true);
