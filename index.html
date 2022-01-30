@@ -86,7 +86,7 @@ class playGame extends Phaser.Scene{
         this.load.image('lunes', 'assets/lunes.png');
         this.load.image('sol', 'assets/sol.png');
         this.load.image('SFground', 'assets/hitbox.png');
-        this.load.spritesheet('goblin', 'assets/robotmouvement.png', { frameWidth: 218, frameHeight: 319 });
+        this.load.spritesheet('robot', 'assets/robotmouvement.png', { frameWidth: 218, frameHeight: 319 });
         this.load.image("tachikoma", "assets/tachikoma.png");
         this.load.image("blob", "assets/blob.png");
     }
@@ -103,7 +103,6 @@ class playGame extends Phaser.Scene{
         this.load.image("murHF", "assets/tour.png");
         this.load.image("murSF", "assets/blocsf.png");
         this.load.spritesheet('goblin', 'assets/gobelins2.png', { frameWidth: 572, frameHeight: 528 });
-        
     }
     
 
@@ -171,6 +170,7 @@ class playGame extends Phaser.Scene{
         this.murSF.setVisible(true);
 
        this.enemies.children.iterate(function(child){
+            child.setScale(1);
             child.setTexture("robot");
         });
         this.jumpEnemies.children.iterate(function(child){
@@ -207,6 +207,7 @@ class playGame extends Phaser.Scene{
         this.murHF.setVisible(true);
 
         this.enemies.children.iterate(function(child){
+            child.setScale(0.4);
             child.setTexture("goblin");
         });
         this.jumpEnemies.children.iterate(function(child){
@@ -447,7 +448,7 @@ class playGame extends Phaser.Scene{
         this.enemies.children.iterate(function (child) {
             if((child.body.position.x - child.scene.player.body.position.x <= child.scene.tempo)
                          &&(!child.attacked)){
-                    if(!this.swap) child.anims.play('goblinAtk', true);
+                    if(!child.scene.swap) child.anims.play('goblinAtk', true);
                     else child.anims.play('robotAtk', true);
                     child.attacked=true;
             }
@@ -542,7 +543,7 @@ class playGame extends Phaser.Scene{
     }
 
     hitEnemy(player,enemy){
-        player.penalty=32;
+        player.penalty=16;
         enemy.inoffensif=true;
     }
     checkEnemy(player,enemy){
@@ -588,10 +589,12 @@ class playGame extends Phaser.Scene{
             break;
             case "atk":
             var enemy;
-            if(!this.swap) {enemy = this.enemies.create(gameOptions.playerStartPosition+90+this.tempo*7+115, 715, 'goblin').setScale(0.4);} 
-            else{enemy = this.enemies.create(gameOptions.playerStartPosition+90+this.tempo*7+115, 715, 'robot').setScale(0.6);}    
-            enemy.setVelocityX(-gameOptions.platformStartSpeed);
+            if(!this.swap) {
+                enemy = this.enemies.create(gameOptions.playerStartPosition+90+this.tempo*7+115, 715, 'goblin').setScale(0.4);
                 enemy.setFlipX(true);
+            } 
+            else{enemy = this.enemies.create(gameOptions.playerStartPosition+90+this.tempo*7+115, 715, 'robot');}    
+                enemy.setVelocityX(-gameOptions.platformStartSpeed);
                 console.log("atk generated");
             break;
             case "murHF":
