@@ -5,7 +5,6 @@
     <title>DimensionalSwap</title>
     <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
     <script src="gameOptions.js"></script>
-    <script src="manaBar.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -201,9 +200,6 @@ class playGame extends Phaser.Scene{
         this.setFantasyWorld();
         this.setSFWorld();
         this.enableFantasyWorld();
- 
-        this.manaBar=this.makeBar(140,300,0xFF0000);
-        this.setValue(33);
 
         // est-on dans le monde alternatif ? au début, non
         this.swap = false;
@@ -248,14 +244,13 @@ class playGame extends Phaser.Scene{
         this.cursors = this.input.keyboard.createCursorKeys();
         this.otherkeys = this.input.keyboard.addKeys('TAB,S,F');
 
-        this.mana=20;
-        //this.manaText = this.add.text(16, 16, 'manaW/h : 0', { fontSize: '32px', fill: '#000' });
- 
         this.killing=false;
         this.generateColliders();
         this.i =0;
-        // checking for input
         //this.input.on("pointerdown", this.jump, this);
+ 
+        this.manaBar=this.makeBar(140,300,0xFF0000);
+        this.setManaValue(0);
         
         this.musicHF = this.sound.add('musicHF');
         this.musicSF = this.sound.add('musicSF');
@@ -278,9 +273,10 @@ class playGame extends Phaser.Scene{
         return bar;
     }
 
-    setValue(percentage) {
+    setManaValue(percentage) {
         //scale the bar
         this.manaBar.scaleX = percentage/100;
+        this.manaBar.value = percentage;
     }
 
     generateColliders(){
@@ -386,10 +382,10 @@ class playGame extends Phaser.Scene{
 
         if (this.cursors.up.isDown||paddle.A){this.jump();}
         if (this.cursors.down.isDown||paddle.B){this.slide();}
-        if (!this.killing&&(paddle.X||this.input.keyboard.checkDown(this.otherkeys.S,1000))&&this.mana>0){
+        if (!this.killing&&(paddle.X||this.input.keyboard.checkDown(this.otherkeys.S,1000))&&this.manaBar.value>0){
             this.killEnemy();          
         }
-        if (!this.killing&&(paddle.Y||this.input.keyboard.checkDown(this.otherkeys.F,1000))&&this.mana>0){
+        if (!this.killing&&(paddle.Y||this.input.keyboard.checkDown(this.otherkeys.F,1000))&&this.manaBar.value>0){
             this.killEnemy();     
         }
         
@@ -445,8 +441,7 @@ class playGame extends Phaser.Scene{
             if((child.body.position.x > child.scene.player.body.position.x)
                 &&(child.body.position.x - child.scene.player.body.position.x <= (181+512+child.scene.tempo)/2)){
                             console.log(child.disableBody(true, true));
-                            child.scene.mana-=10;
-                            //child.scene.manaText.setText('manaW/h : ' + child.scene.mana);
+                            child.scene.manaBar.setManaValue(child.scene.manaBar.value-25);
                             child.scene.killing=true;
                 }
             });  
@@ -456,8 +451,7 @@ class playGame extends Phaser.Scene{
 
     collectStar(player, star){
         star.disableBody(true, true);
-        this.mana += 10;
-        //this.manaText.setText('manaW/h : ' + this.mana);
+        child.scene.manaBar.setManaValue(child.scene.manaBar.value+25);
     }
 
     hitEnemy(player,enemy){
