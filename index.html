@@ -260,7 +260,7 @@ class playGame extends Phaser.Scene{
         // adding the player;
         this.player = this.physics.add.sprite(gameOptions.playerStartPosition, 712, "lisbeicourse");
         this.player.setGravityY(gameOptions.playerGravity);
-        this.player.penalty=-16;
+        this.player.penalty=-32;
         this.player.sliding=0;
         this.boss = this.physics.add.sprite(80,580,"boss");
         this.boss.setGravityY(0);
