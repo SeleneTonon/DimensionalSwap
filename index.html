@@ -54,6 +54,7 @@ class intro extends Phaser.Scene{
     }
     preload(){
 
+        this.load.image('accueil', 'assets/accueil.png');
     }
     startplaygame(){
         console.log("test");
@@ -61,7 +62,7 @@ class intro extends Phaser.Scene{
         console.log("test2");
     }
     create(){
-        this.add.text(200, 200, 'Click to play', { fontSize: '50px', fill: '#000' });
+        this.accueil = this.add.image(game.config.width/2, game.config.height/2, 'accueil');
         this.input.on("pointerdown", this.startplaygame, this);
     }
     
@@ -79,12 +80,9 @@ class playGame extends Phaser.Scene{
     preloadSF(){
         this.load.image('cielmauve', 'assets/background.png');
         this.load.image('sky', 'assets/ciel.png');
-        this.load.image('building1', 'assets/immeuble1.png');
-        this.load.image('building2', 'assets/immeuble2.png');
-        this.load.image('building3', 'assets/immeuble3.png');
-        this.load.image('luminaire', 'assets/luminaire.png');
-        this.load.image('lunes', 'assets/lunes.png');
-        this.load.image('sol', 'assets/sol.png');
+        this.load.image('building', 'assets/immeubles.png');
+        this.load.image('lunes', 'assets/lune.png');
+        this.load.image('sol', 'assets/SF.png');
         this.load.image('SFground', 'assets/hitbox.png');
         this.load.spritesheet('robot', 'assets/robotmouvement.png', { frameWidth: 218, frameHeight: 319 });
         this.load.image("tachikoma", "assets/tachikoma.png");
@@ -113,6 +111,7 @@ class playGame extends Phaser.Scene{
         this.load.image('boss', 'assets/boss.png');
         this.load.spritesheet('lisbeicourse', 'assets/lisbeicourse.png', { frameWidth: 181, frameHeight: 232 });
         this.load.spritesheet('lisbeislide', 'assets/lisbeiglissade.png', { frameWidth: 280, frameHeight: 143 });
+        this.load.spritesheet('lisbeilaser', 'assets/lisbeilaser.png', { frameWidth: 187, frameHeight: 224 });
         this.load.spritesheet('beat', 'assets/shock.png', { frameWidth: 64, frameHeight: 64 });
         this.load.audio('musicHF',['assets/music/MorceauHF.mp3']);
         this.load.audio('musicSF',['assets/music/MorceauSF.mp3']);
@@ -138,10 +137,8 @@ class playGame extends Phaser.Scene{
     setSFWorld(){
         this.cielmauve = this.add.image(game.config.width/2, game.config.height/2, 'cielmauve');
         this.lunes = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "lunes");
-        this.building3 = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "building3");
-        this.building2 = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "building2");
-        this.building1 = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "building1");
-        this.luminaire = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "luminaire");
+        this.building = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "building");
+        //this.luminaire = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "luminaire");
         this.sol = this.add.tileSprite(game.config.width/2, game.config.height/2, 0, 0, "sol");
    }
 
@@ -154,10 +151,8 @@ class playGame extends Phaser.Scene{
         this.foreground.setVisible(false);
         this.cielmauve.setVisible(true);
         this.lunes.setVisible(true);
-        this.building3.setVisible(true);
-        this.building2.setVisible(true);
-        this.building1.setVisible(true);
-        this.luminaire.setVisible(true);
+        this.building.setVisible(true);
+        //this.luminaire.setVisible(true);
         this.sol.setVisible(true);
         this.platformGroup.children.iterate(function (child) {
             child.setTexture("SFground");
@@ -190,10 +185,8 @@ class playGame extends Phaser.Scene{
         this.bushes.setVisible(true);
         this.foreground.setVisible(true);
         this.cielmauve.setVisible(false);
-        this.building1.setVisible(false);
-        this.building2.setVisible(false);
-        this.building3.setVisible(false);
-        this.luminaire.setVisible(false);
+        this.building.setVisible(false);
+       // this.luminaire.setVisible(false);
         this.lunes.setVisible(false);
         this.sol.setVisible(false);
         this.platformGroup.children.iterate(function (child) {
@@ -273,6 +266,12 @@ class playGame extends Phaser.Scene{
         });
 
         this.anims.create({
+            key: 'sword',
+            frames: this.anims.generateFrameNumbers('lisbeilaser', { start: 0, end: 0 }),
+            frameRate: 10,repeat: -1
+        });
+
+        this.anims.create({
             key: 'right',
             frames: this.anims.generateFrameNumbers('lisbeicourse', { start: 0, end: 5 }),
             frameRate: 10,repeat: -1
@@ -308,7 +307,7 @@ class playGame extends Phaser.Scene{
         this.i =0;
         //this.input.on("pointerdown", this.jump, this);
  
-        this.manaBar=this.makeBar(800,300,0xFF0000);
+        this.manaBar=this.makeBar(1600,200,0xFF00FF);
         this.setManaValue(0);
         
         this.musicHF = this.sound.add('musicHF');
@@ -405,14 +404,11 @@ class playGame extends Phaser.Scene{
         else{ //défilement
             this.cloudsWhiteSmall.tilePositionX += 0.25;
             this.mountains.tilePositionX += 0.25;
-            this.building3.tilePositionX +=0.25;
+            this.building.tilePositionX +=0.25;
 
             this.cloudsWhite.tilePositionX += 0.5;
-            this.building2.tilePositionX += 0.5;
 
-            this.building1.tilePositionX += 1;
-
-            this.luminaire.tilePositionX += 4;
+            //this.luminaire.tilePositionX += 4;
             this.sol.tilePositionX +=4;
             this.foreground.tilePositionX += 4;
             this.bushes.tilePositionX +=4;
@@ -460,7 +456,7 @@ class playGame extends Phaser.Scene{
             }
         });  
         
-        if(!paddle.X&&!paddle.Y) this.killing=false;
+        if(!paddle.X) this.killing=false;
 
         if (this.cursors.up.isDown||paddle.A){this.jump();}
         if (this.cursors.down.isDown||paddle.B){this.slide();}
@@ -531,6 +527,7 @@ class playGame extends Phaser.Scene{
                             child.scene.setManaValue(child.scene.manaBar.value-25);
                             child.scene.killing=true;
                             child.scene.gainCombo();
+                            child.scene.player.anims.play('sword',true);
                 }
             });  
     }
