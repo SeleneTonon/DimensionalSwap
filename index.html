@@ -86,6 +86,9 @@ class playGame extends Phaser.Scene{
         this.load.image('lunes', 'assets/lunes.png');
         this.load.image('sol', 'assets/sol.png');
         this.load.image('SFground', 'assets/hitbox.png');
+        this.load.spritesheet('goblin', 'assets/robotmouvement.png', { frameWidth: 218, frameHeight: 319 });
+        this.load.image("tachikoma", "assets/tachikoma.png");
+        this.load.image("blob", "assets/blob.png");
     }
     preloadFantasy(){
         this.load.image('sky', 'assets/ciel.png');
@@ -99,6 +102,8 @@ class playGame extends Phaser.Scene{
         this.load.image("pieu", "assets/pieu.png");
         this.load.image("murHF", "assets/tour.png");
         this.load.image("murSF", "assets/blocsf.png");
+        this.load.spritesheet('goblin', 'assets/gobelins2.png', { frameWidth: 572, frameHeight: 528 });
+        
     }
     
 
@@ -107,7 +112,6 @@ class playGame extends Phaser.Scene{
         this.preloadFantasy();
         this.load.image('star', 'assets/star.png');
         this.load.image('bomb', 'assets/bomb.png');
-        this.load.spritesheet('goblin', 'assets/gobelins2.png', { frameWidth: 572, frameHeight: 528 });
         this.load.spritesheet('lisbeicourse', 'assets/lisbeicourse.png', { frameWidth: 181, frameHeight: 232 });
         this.load.spritesheet('lisbeislide', 'assets/lisbeiglissade.png', { frameWidth: 280, frameHeight: 143 });
         this.load.spritesheet('beat', 'assets/shock.png', { frameWidth: 64, frameHeight: 64 });
@@ -166,12 +170,15 @@ class playGame extends Phaser.Scene{
         this.murHF.setVisible(false);
         this.murSF.setVisible(true);
 
-     /*   this.enemies.children.iterate(function(child){
-            child.setTexture("goblin");
+       this.enemies.children.iterate(function(child){
+            child.setTexture("robot");
         });
-        this.enemies.children.iterate(function(child){
-            child.setTexture("goblin");
-        });*/
+        this.jumpEnemies.children.iterate(function(child){
+            child.setTexture("blob");
+        });
+        this.slideEnemies.children.iterate(function(child){
+            child.setTexture("tachikoma");
+        });
     }
 
     enableFantasyWorld(){
@@ -198,6 +205,16 @@ class playGame extends Phaser.Scene{
     enableFantasyWallAndEnemies(){
         this.murSF.setVisible(false);
         this.murHF.setVisible(true);
+
+        this.enemies.children.iterate(function(child){
+            child.setTexture("goblin");
+        });
+        this.jumpEnemies.children.iterate(function(child){
+            child.setTexture("pieu");
+        });
+        this.slideEnemies.children.iterate(function(child){
+            child.setTexture("troll");
+        });
     }
 
 
@@ -232,7 +249,7 @@ class playGame extends Phaser.Scene{
         this.beat = this.add.sprite(800,900,"beat");
         this.anims.create({
             key: 'rythme',
-            frames: this.anims.generateFrameNumbers('beat', { start: 0, end: 32 }),
+            frames: this.anims.generateFrameNumbers('beat', { start: 0, end: 31 }),
             frameRate: 30,repeat: -1
         });
  
@@ -261,6 +278,12 @@ class playGame extends Phaser.Scene{
         this.anims.create({
             key: 'goblinAtk',
             frames: this.anims.generateFrameNumbers('goblin', { start: 0, end: 3 }),
+            frameRate: 10,repeat: 0
+        });
+
+        this.anims.create({
+            key: 'robotAtk',
+            frames: this.anims.generateFrameNumbers('robot', { start: 0, end: 5 }),
             frameRate: 10,repeat: 0
         });
 
@@ -424,7 +447,8 @@ class playGame extends Phaser.Scene{
         this.enemies.children.iterate(function (child) {
             if((child.body.position.x - child.scene.player.body.position.x <= child.scene.tempo)
                          &&(!child.attacked)){
-                    child.anims.play('goblinAtk', true);
+                    if(!this.swap) child.anims.play('goblinAtk', true);
+                    else child.anims.play('robotAtk', true);
                     child.attacked=true;
             }
         });  
@@ -540,9 +564,13 @@ class playGame extends Phaser.Scene{
         this.nbTempo++;
         switch(gameOptions.levelGenerator[this.nbTempo]){
             case "jump":
-            var jumpEnemy = this.jumpEnemies.create(gameOptions.playerStartPosition+90+this.tempo*7+55, 795, 'pieu').setScale(0.75);
-                jumpEnemy.setVelocityX(-gameOptions.platformStartSpeed);
-            //    jumpEnemy.setGravityY(gameOptions.playerGravity);
+            var jumpEnemy;
+            if(!this.swap) {
+                jumpEnemy = this.jumpEnemies.create(gameOptions.playerStartPosition+90+this.tempo*7+55, 795, 'pieu').setScale(0.75);
+            }else{
+                jumpEnemy = this.jumpEnemies.create(gameOptions.playerStartPosition+90+this.tempo*7+55, 795, 'blob').setScale(0.75);
+            }
+            jumpEnemy.setVelocityX(-gameOptions.platformStartSpeed);
                 console.log("jump generated");
             break;
             case "mana":
@@ -552,16 +580,18 @@ class playGame extends Phaser.Scene{
                 console.log("star generated");
             break;
             case "slide":
-            var slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+90+this.tempo*7+174, 437, 'troll');
+            var slideEnemy;
+            if(!this.swap) { slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+90+this.tempo*7+174, 437, 'troll');}
+            else { slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+90+this.tempo*7+174, 437, 'tachikoma');}
                 slideEnemy.setVelocityX(-gameOptions.platformStartSpeed);
-            //    slideEnemy.setGravityY(gameOptions.playerGravity);
                 console.log("slide generated");
             break;
             case "atk":
-            var enemy = this.enemies.create(gameOptions.playerStartPosition+90+this.tempo*7+115, 715, 'goblin').setScale(0.4);
-                enemy.setVelocityX(-gameOptions.platformStartSpeed);
+            var enemy;
+            if(!this.swap) {enemy = this.enemies.create(gameOptions.playerStartPosition+90+this.tempo*7+115, 715, 'goblin').setScale(0.4);} 
+            else{enemy = this.enemies.create(gameOptions.playerStartPosition+90+this.tempo*7+115, 715, 'robot').setScale(0.6);}    
+            enemy.setVelocityX(-gameOptions.platformStartSpeed);
                 enemy.setFlipX(true);
-            //    enemy.setGravityY(gameOptions.playerGravity);
                 console.log("atk generated");
             break;
             case "murHF":
