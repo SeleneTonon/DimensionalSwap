@@ -2,7 +2,7 @@ let gameOptions = {
     platformStartSpeed: 720,
     spawnRange: [100, 350],
     platformSizeRange: [50, 250],
-    playerGravity: 8000,
+    playerGravity: 7500,
     jumpForce: 2000,
     playerStartPosition: 3*32*360/60,
     levelGenerator:{
