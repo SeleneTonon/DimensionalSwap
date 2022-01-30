@@ -260,7 +260,7 @@ class playGame extends Phaser.Scene{
         // adding the player;
         this.player = this.physics.add.sprite(gameOptions.playerStartPosition, 712, "lisbeicourse");
         this.player.setGravityY(gameOptions.playerGravity);
-        this.player.penalty=0;
+        this.player.penalty=16;
         this.player.sliding=0;
         //this.player.setCollideWorldBounds(true);
 
@@ -552,7 +552,7 @@ class playGame extends Phaser.Scene{
     }
 
     hitSlideEnemy(player,enemy){
-        player.penalty=32;
+        player.penalty=16;
         enemy.inoffensif=true;
     }
     checkSlideEnemy(player,enemy){
