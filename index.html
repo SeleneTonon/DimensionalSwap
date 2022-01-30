@@ -36,7 +36,7 @@ window.onload = function() {
         physics: {
             default: "arcade",
             arcade: {
-                debug: true
+               // debug: true
             }
         }
     }
@@ -248,7 +248,7 @@ class playGame extends Phaser.Scene{
         this.cursors = this.input.keyboard.createCursorKeys();
         this.otherkeys = this.input.keyboard.addKeys('TAB,S,F');
 
-        this.mana=0;
+        this.mana=20;
         //this.manaText = this.add.text(16, 16, 'manaW/h : 0', { fontSize: '32px', fill: '#000' });
  
         this.killing=false;
@@ -297,7 +297,8 @@ class playGame extends Phaser.Scene{
 
     slide(){
         if(this.player.body.touching.down&&this.player.sliding==0){
-            this.player.sliding=32;
+            this.player.sliding=32*1.5;
+            this.player.setTint(0x00ff00);
             //this.sound.add("slide").play();
         }
     }
@@ -332,7 +333,10 @@ class playGame extends Phaser.Scene{
                 }
                 else {
                     this.player.setVelocityX(gameOptions.platformStartSpeed);
-                    if(this.player.sliding==0) this.player.anims.play('right', true);
+                    if(this.player.sliding==0) {
+                        this.player.anims.play('right', true);
+                        this.player.setTint(0xffffff);
+                    }
                     else{
                         this.player.anims.play('slide', true);
                         this.player.sliding--;
@@ -409,8 +413,7 @@ class playGame extends Phaser.Scene{
             console.log("killEnemy");
                 console.log(child);
             if((child.body.position.x > child.scene.player.body.position.x)
-                &&((child.body.position.x - child.scene.player.body.position.x >= child.scene.tempo/2)
-                         &&(child.body.position.x - child.scene.player.body.position.x <= 3*child.scene.tempo/2))){
+                &&(child.body.position.x - child.scene.player.body.position.x <= child.scene.tempo)){
                             console.log(child.disableBody(true, true));
                             child.scene.mana-=10;
                             //child.scene.manaText.setText('manaW/h : ' + child.scene.mana);
@@ -449,26 +452,26 @@ class playGame extends Phaser.Scene{
         this.nbTempo++;
         switch(gameOptions.levelGenerator[this.nbTempo]){
             case "jump":
-            var jumpEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7, 815, 'bomb').setScale(3).refreshBody();
+            var jumpEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7.5, 815, 'bomb').setScale(3);
                 jumpEnemy.setVelocityX(-gameOptions.platformStartSpeed);
             //    jumpEnemy.setGravityY(gameOptions.playerGravity);
                 console.log("jump generated");
             break;
             case "mana":
-            var star = this.stars.create(gameOptions.playerStartPosition+this.tempo*7, 780, 'star').setScale(3).refreshBody();
+            var star = this.stars.create(gameOptions.playerStartPosition+this.tempo*7.5, 780, 'star').setScale(3);
                 star.setVelocityX(0);
                 star.setGravityY(gameOptions.playerGravity);
                 console.log("star generated");
             break;
             case "slide":
-            var slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7, 815, 'bomb').setScale(3).refreshBody();
+            var slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7.5, 815, 'bomb').setScale(3);
                 slideEnemy.setVelocityX(-gameOptions.platformStartSpeed);
                 slideEnemy.setTint(0xff0000);
             //    slideEnemy.setGravityY(gameOptions.playerGravity);
                 console.log("slide generated");
             break;
             case "atk":
-            var enemy = this.enemies.create(gameOptions.playerStartPosition+this.tempo*7, 715, 'goblin').setScale(0.4).refreshBody();
+            var enemy = this.enemies.create(gameOptions.playerStartPosition+this.tempo*7.5, 715, 'goblin').setScale(0.4);
                 enemy.setVelocityX(-gameOptions.platformStartSpeed);
                 enemy.setFlipX(true);
             //    enemy.setGravityY(gameOptions.playerGravity);
