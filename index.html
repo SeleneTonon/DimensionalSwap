@@ -97,6 +97,8 @@ class playGame extends Phaser.Scene{
         this.load.image("bushes", "assets/buisson.png");
         this.load.image("troll", "assets/troll.png");
         this.load.image("pieu", "assets/pieu.png");
+        this.load.image("murHF", "assets/tour.png");
+        this.load.image("murSF", "assets/blocsf.png");
     }
     
 
@@ -158,7 +160,18 @@ class playGame extends Phaser.Scene{
         });
         this.platformPool.children.iterate(function (child) {
             child.setTexture("SFground");
+        }); 
+    }
+    enableSFWallAndEnemies(){
+        this.murHF.setVisible(false);
+        this.murSF.setVisible(true);
+
+     /*   this.enemies.children.iterate(function(child){
+            child.setTexture("goblin");
         });
+        this.enemies.children.iterate(function(child){
+            child.setTexture("goblin");
+        });*/
     }
 
     enableFantasyWorld(){
@@ -181,6 +194,10 @@ class playGame extends Phaser.Scene{
         this.platformPool.children.iterate(function (child) {
             child.setTexture("ground");
         });
+    }
+    enableFantasyWallAndEnemies(){
+        this.murSF.setVisible(false);
+        this.murHF.setVisible(true);
     }
 
 
@@ -254,6 +271,9 @@ class playGame extends Phaser.Scene{
         this.slideEnemies = this.physics.add.group();
         this.jumpEnemies = this.physics.add.group();
 
+        this.murHF = this.physics.add.group();
+        this.murSF = this.physics.add.group();
+
         this.cursors = this.input.keyboard.createCursorKeys();
         this.otherkeys = this.input.keyboard.addKeys('TAB,S,F');
 
@@ -295,6 +315,15 @@ class playGame extends Phaser.Scene{
         this.physics.add.overlap(this.player, this.slideEnemies,this.hitSlideEnemy,this.checkSlideEnemy,this);
         this.physics.add.overlap(this.player, this.jumpEnemies,this.hitEnemy,this.checkEnemy,this);
         this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
+        this.physics.add.overlap(this.player, this.murHF, this.hitEnemy, this.notSwapped, this);
+        this.physics.add.overlap(this.player, this.murSF, this.hitEnemy, this.swapped, this);
+    }
+
+    swapped(){
+        return this.swap;
+    }
+    notSwapped(){
+        return !this.swap;
     }
  
     // the core of the script: platform are added from the pool or created on the fly
@@ -416,6 +445,7 @@ class playGame extends Phaser.Scene{
         if ((paddle.L2||this.input.keyboard.checkDown(this.otherkeys.TAB,1000))&&!this.swap){
             this.swap=true;
             this.enableSFWorld();
+            this.enableSFWallAndEnemies();
             this.musicHF.setMute(true);
             this.sound.add("swap").play();
             this.musicSF.setMute(false);
@@ -423,6 +453,7 @@ class playGame extends Phaser.Scene{
             this.swap=false;
             this.musicSF.setMute(true);
             this.enableFantasyWorld();
+            this.enableFantasyWallAndEnemies();
             this.musicHF.setMute(false);
             this.sound.add("swap").play();
         }
@@ -527,11 +558,23 @@ class playGame extends Phaser.Scene{
                 console.log("slide generated");
             break;
             case "atk":
-            var enemy = this.enemies.create(gameOptions.playerStartPosition+90+this.tempo*7+286, 715, 'goblin').setScale(0.4);
+            var enemy = this.enemies.create(gameOptions.playerStartPosition+90+this.tempo*7+115, 715, 'goblin').setScale(0.4);
                 enemy.setVelocityX(-gameOptions.platformStartSpeed);
                 enemy.setFlipX(true);
             //    enemy.setGravityY(gameOptions.playerGravity);
                 console.log("atk generated");
+            break;
+            case "murHF":
+            var murHF = this.murHF.create(gameOptions.playerStartPosition+90+this.tempo*7+210, 440, 'murHF');
+            murHF.setVelocityX(-gameOptions.platformStartSpeed);
+                console.log("murHF generated");
+                if(this.swap) murHF.setVisible(false);
+            break;
+            case "murSF":
+            var murSF = this.murSF.create(gameOptions.playerStartPosition+90+this.tempo*7+210, 440, 'murSF');
+            murSF.setVelocityX(-gameOptions.platformStartSpeed);
+                console.log("murSF generated");
+                if(!this.swap) murSF.setVisible(false);
             break;
         }
     }

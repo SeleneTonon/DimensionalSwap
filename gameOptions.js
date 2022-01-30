@@ -8,7 +8,7 @@ let gameOptions = {
     levelGenerator:{
         9:"jump",
         18:"slide",
-        26:"jump",
+        26:"murSF",
         30:"slide",
         42:"jump",
         46:"slide",
