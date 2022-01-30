@@ -240,13 +240,10 @@ class playGame extends Phaser.Scene{
         });
 
         this.stars = this.physics.add.group();
-        
-
+        this.stars = this.physics.add.group();
         this.enemies = this.physics.add.group();
 
         this.slideEnemies = this.physics.add.group();
-        let jumpEnemy=this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7, 815, 'bomb').setScale(3).refreshBody();
-        jumpEnemy.setVelocityX(-gameOptions.platformStartSpeed);
 
         this.cursors = this.input.keyboard.createCursorKeys();
         this.otherkeys = this.input.keyboard.addKeys('TAB,S,F');
@@ -264,10 +261,8 @@ class playGame extends Phaser.Scene{
     generateColliders(){
         this.physics.add.collider(this.player, this.platformGroup);
         this.physics.add.collider(this.stars, this.platformGroup);
-        //this.physics.add.collider(this.enemies, this.platformGroup);
-        //this.physics.add.collider(this.slideEnemies, this.platformGroup);
-        this.physics.add.overlap(this.player, this.enemy,this.hitEnemy,this.checkEnemy,this);
-        this.physics.add.overlap(this.player, this.slideEnemy,this.hitSlideEnemy,this.checkSlideEnemy,this);
+        this.physics.add.overlap(this.player, this.enemies,this.hitEnemy,this.checkEnemy,this);
+        this.physics.add.overlap(this.player, this.slideEnemies,this.hitSlideEnemy,this.checkSlideEnemy,this);
         this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
     }
  
@@ -411,6 +406,7 @@ class playGame extends Phaser.Scene{
 
     killEnemy(){
         this.enemies.children.iterate(function (child) {
+            console.log("killEnemy");
                 console.log(child);
             if((child.body.position.x > child.scene.player.body.position.x)
                 &&((child.body.position.x - child.scene.player.body.position.x >= child.scene.tempo/2)
@@ -434,7 +430,6 @@ class playGame extends Phaser.Scene{
     hitEnemy(player,enemy){
         player.penalty=32;
         enemy.inoffensif=true;
-        enemy.setVelocityX(0);
     }
     checkEnemy(player,enemy){
         console.log("test enemy");
@@ -444,7 +439,6 @@ class playGame extends Phaser.Scene{
     hitSlideEnemy(player,enemy){
         player.penalty=32;
         enemy.inoffensif=true;
-        enemy.setVelocityX(0);
     }
     checkSlideEnemy(player,enemy){
         console.log("test2 slide enemy");
@@ -455,26 +449,26 @@ class playGame extends Phaser.Scene{
         this.nbTempo++;
         switch(gameOptions.levelGenerator[this.nbTempo]){
             case "jump":
-            let jumpEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7, 815, 'bomb').setScale(3).refreshBody();
+            var jumpEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7, 815, 'bomb').setScale(3).refreshBody();
                 jumpEnemy.setVelocityX(-gameOptions.platformStartSpeed);
             //    jumpEnemy.setGravityY(gameOptions.playerGravity);
                 console.log("jump generated");
             break;
             case "mana":
-            let star = this.stars.create(gameOptions.playerStartPosition+this.tempo*7, 780, 'star').setScale(3).refreshBody();
+            var star = this.stars.create(gameOptions.playerStartPosition+this.tempo*7, 780, 'star').setScale(3).refreshBody();
                 star.setVelocityX(0);
                 star.setGravityY(gameOptions.playerGravity);
                 console.log("star generated");
             break;
             case "slide":
-            let slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7, 815, 'bomb').setScale(3).refreshBody();
+            var slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7, 815, 'bomb').setScale(3).refreshBody();
                 slideEnemy.setVelocityX(-gameOptions.platformStartSpeed);
                 slideEnemy.setTint(0xff0000);
             //    slideEnemy.setGravityY(gameOptions.playerGravity);
                 console.log("slide generated");
             break;
             case "atk":
-            let enemy = this.enemies.create(gameOptions.playerStartPosition+this.tempo*7, 715, 'goblin').setScale(0.4).refreshBody();
+            var enemy = this.enemies.create(gameOptions.playerStartPosition+this.tempo*7, 715, 'goblin').setScale(0.4).refreshBody();
                 enemy.setVelocityX(-gameOptions.platformStartSpeed);
                 enemy.setFlipX(true);
             //    enemy.setGravityY(gameOptions.playerGravity);
