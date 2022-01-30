@@ -35,7 +35,7 @@ window.onload = function() {
         physics: {
             default: "arcade",
             arcade: {
-               // debug: true
+               debug: true
             }
         }
     }
@@ -104,6 +104,7 @@ class playGame extends Phaser.Scene{
         this.load.image('bomb', 'assets/bomb.png');
         this.load.spritesheet('goblin', 'assets/gobelins2.png', { frameWidth: 572, frameHeight: 528 });
         this.load.spritesheet('lisbeicourse', 'assets/lisbeicourse.png', { frameWidth: 181, frameHeight: 232 });
+        this.load.spritesheet('lisbeislide', 'assets/lisbeiglissade.png', { frameWidth: 280, frameHeight: 143 });
         this.load.spritesheet('beat', 'assets/shock.png', { frameWidth: 64, frameHeight: 64 });
         this.load.audio('musicHF',['assets/music/MorceauHF.mp3']);
         this.load.audio('musicSF',['assets/music/MorceauSF.mp3']);
@@ -227,7 +228,7 @@ class playGame extends Phaser.Scene{
 
         this.anims.create({
             key: 'slide',
-            frames: this.anims.generateFrameNumbers('lisbeicourse', { start: 0, end: 5 }),
+            frames: this.anims.generateFrameNumbers('lisbeislide', { start: 0, end: 2 }),
             frameRate: 10,repeat: -1
         });
 
@@ -284,7 +285,7 @@ class playGame extends Phaser.Scene{
     }
 
     generateColliders(){
-        this.physics.add.collider(this.player, this.platformGroup);
+        this.physics.add.collider(this.player, this.platformGroup, null, this.isNotSliding,this);
         this.physics.add.collider(this.stars, this.platformGroup);
         this.physics.add.overlap(this.player, this.enemies,this.hitEnemy,this.checkEnemy,this);
         this.physics.add.overlap(this.player, this.slideEnemies,this.hitSlideEnemy,this.checkSlideEnemy,this);
@@ -313,7 +314,8 @@ class playGame extends Phaser.Scene{
     }
  
     jump(){
-        if(this.player.body.touching.down&&(this.player.sliding==0||this.player.sliding>=24)){
+        if((this.player.body.touching.down&&this.player.sliding==0)||this.player.sliding>=24){
+            this.player.setGravityY(gameOptions.playerGravity);
             this.player.setVelocityY(gameOptions.jumpForce * -1);
             this.sound.add("jump").play();
             this.gainCombo();
@@ -323,9 +325,10 @@ class playGame extends Phaser.Scene{
 
     slide(){
         if((this.player.body.touching.down||this.player.body.velocity.y>0)&&this.player.sliding==0){
-            this.player.body.setVelocityY(1000);
+            if(this.player.body.velocity.y>0) this.player.body.setVelocityY(1000);
             this.player.sliding=32*1.5;
-            this.player.setTint(0x00ff00);
+            this.player.setGravityY(0);
+            this.player.anims.play('slide', true);
             //this.sound.add("slide").play();
             this.gainCombo();
         }
@@ -354,20 +357,26 @@ class playGame extends Phaser.Scene{
             this.bushes.tilePositionX +=4;
             
 
-            if(this.player.body.touching.down){
+            if(this.player.body.touching.down||this.player.sliding>0){
                 if(this.player.penalty>0) {
                     this.player.penalty--;
                     this.player.setVelocityX(0);
                 }
                 else {
-                    this.player.setVelocityX(gameOptions.platformStartSpeed);
-                    if(this.player.sliding==0) {
+                    if(this.player.sliding==1) { 
                         this.player.anims.play('right', true);
-                        this.player.setTint(0xffffff);
-                    }
+                        this.player.setGravityY(gameOptions.playerGravity);
+                        this.player.sliding--;
+                        this.player.setVelocityX(gameOptions.platformStartSpeed);
+                     }
+                    else if(this.player.sliding==0) { 
+                        this.player.anims.play('right', true);
+                        this.player.setVelocityX(gameOptions.platformStartSpeed);
+                     }
                     else{
                         this.player.anims.play('slide', true);
                         this.player.sliding--;
+                        this.player.setVelocityX(0);
                     }
                 }
             }
@@ -489,6 +498,7 @@ class playGame extends Phaser.Scene{
         console.log("test2 slide enemy");
         return (!enemy.inoffensif)&&player.sliding==0;
     }
+    isNotSliding(){ return this.player.sliding==0;}
 
     generateLevel(){
         this.nbTempo++;
@@ -513,7 +523,7 @@ class playGame extends Phaser.Scene{
                 console.log("slide generated");
             break;
             case "atk":
-            var enemy = this.enemies.create(gameOptions.playerStartPosition+this.tempo*7.5, 715, 'goblin').setScale(0.4);
+            var enemy = this.enemies.create(gameOptions.playerStartPosition+this.tempo*7.5+286, 715, 'goblin').setScale(0.4);
                 enemy.setVelocityX(-gameOptions.platformStartSpeed);
                 enemy.setFlipX(true);
             //    enemy.setGravityY(gameOptions.playerGravity);
