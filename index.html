@@ -95,7 +95,10 @@ class playGame extends Phaser.Scene{
         this.load.image("foreground", "assets/1erplan.png");
         this.load.image("mountains", "assets/montagne.png");
         this.load.image("bushes", "assets/buisson.png");
+        this.load.image("troll", "assets/troll.png");
+        this.load.image("pieu", "assets/pieu.png");
     }
+    
 
     preload(){
         this.preloadSF();
@@ -249,6 +252,7 @@ class playGame extends Phaser.Scene{
         this.enemies = this.physics.add.group();
 
         this.slideEnemies = this.physics.add.group();
+        this.jumpEnemies = this.physics.add.group();
 
         this.cursors = this.input.keyboard.createCursorKeys();
         this.otherkeys = this.input.keyboard.addKeys('TAB,S,F');
@@ -289,6 +293,7 @@ class playGame extends Phaser.Scene{
         this.physics.add.collider(this.stars, this.platformGroup);
         this.physics.add.overlap(this.player, this.enemies,this.hitEnemy,this.checkEnemy,this);
         this.physics.add.overlap(this.player, this.slideEnemies,this.hitSlideEnemy,this.checkSlideEnemy,this);
+        this.physics.add.overlap(this.player, this.jumpEnemies,this.hitEnemy,this.checkEnemy,this);
         this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
     }
  
@@ -326,7 +331,7 @@ class playGame extends Phaser.Scene{
     slide(){
         if((this.player.body.touching.down||this.player.body.velocity.y>0)&&this.player.sliding==0){
             if(this.player.body.velocity.y>0) this.player.body.setVelocityY(1000);
-            this.player.sliding=32*1.5;
+            this.player.sliding=32*2.5;
             this.player.setGravityY(0);
             this.player.anims.play('slide', true);
             //this.sound.add("slide").play();
@@ -504,7 +509,7 @@ class playGame extends Phaser.Scene{
         this.nbTempo++;
         switch(gameOptions.levelGenerator[this.nbTempo]){
             case "jump":
-            var jumpEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7.5, 815, 'bomb').setScale(3);
+            var jumpEnemy = this.jumpEnemies.create(gameOptions.playerStartPosition+this.tempo*7.5+55, 775, 'pieu').setScale(0.75);
                 jumpEnemy.setVelocityX(-gameOptions.platformStartSpeed);
             //    jumpEnemy.setGravityY(gameOptions.playerGravity);
                 console.log("jump generated");
@@ -516,9 +521,8 @@ class playGame extends Phaser.Scene{
                 console.log("star generated");
             break;
             case "slide":
-            var slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7.5, 815, 'bomb').setScale(3);
+            var slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7.5+174, 437, 'troll');
                 slideEnemy.setVelocityX(-gameOptions.platformStartSpeed);
-                slideEnemy.setTint(0xff0000);
             //    slideEnemy.setGravityY(gameOptions.playerGravity);
                 console.log("slide generated");
             break;
