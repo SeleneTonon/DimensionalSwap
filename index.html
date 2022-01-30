@@ -509,25 +509,25 @@ class playGame extends Phaser.Scene{
         this.nbTempo++;
         switch(gameOptions.levelGenerator[this.nbTempo]){
             case "jump":
-            var jumpEnemy = this.jumpEnemies.create(gameOptions.playerStartPosition+this.tempo*7.5+55, 775, 'pieu').setScale(0.75);
+            var jumpEnemy = this.jumpEnemies.create(gameOptions.playerStartPosition+this.tempo*7+55, 795, 'pieu').setScale(0.75);
                 jumpEnemy.setVelocityX(-gameOptions.platformStartSpeed);
             //    jumpEnemy.setGravityY(gameOptions.playerGravity);
                 console.log("jump generated");
             break;
             case "mana":
-            var star = this.stars.create(gameOptions.playerStartPosition+this.tempo*7.5, 780, 'star').setScale(3);
+            var star = this.stars.create(gameOptions.playerStartPosition+this.tempo*7, 780, 'star').setScale(3);
                 star.setVelocityX(0);
                 star.setGravityY(gameOptions.playerGravity);
                 console.log("star generated");
             break;
             case "slide":
-            var slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7.5+174, 437, 'troll');
+            var slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+this.tempo*7+174, 437, 'troll');
                 slideEnemy.setVelocityX(-gameOptions.platformStartSpeed);
             //    slideEnemy.setGravityY(gameOptions.playerGravity);
                 console.log("slide generated");
             break;
             case "atk":
-            var enemy = this.enemies.create(gameOptions.playerStartPosition+this.tempo*7.5+286, 715, 'goblin').setScale(0.4);
+            var enemy = this.enemies.create(gameOptions.playerStartPosition+this.tempo*7+286, 715, 'goblin').setScale(0.4);
                 enemy.setVelocityX(-gameOptions.platformStartSpeed);
                 enemy.setFlipX(true);
             //    enemy.setGravityY(gameOptions.playerGravity);
