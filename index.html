@@ -5,6 +5,7 @@
     <title>DimensionalSwap</title>
     <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
     <script src="gameOptions.js"></script>
+    <script src="assetsData.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -29,7 +30,7 @@ window.onload = function() {
         width: 1920,
         height: 1080,
         scene: [intro,playGame],
-        backgroundColor: 0x444444,
+        backgroundColor: 0xFFFFFF,
         input:{gamepad:true},
         // physics settings
         physics: {
@@ -49,33 +50,17 @@ window.onload = function() {
 
 
 class intro extends Phaser.Scene{
-    constructor(){
-        super("intro");
-    }
-    preload(){
-
-        this.load.image('accueil', 'assets/accueil.png');
-    }
-    startplaygame(){
-        console.log("test");
-        this.scene.start("PlayGame");
-        console.log("test2");
-    }
-    create(){
-        this.accueil = this.add.image(game.config.width/2, game.config.height/2, 'accueil');
-        this.input.on("pointerdown", this.startplaygame, this);
-    }
-    
-    update(){
-        
-    }
+    constructor(){super("intro");}
+    preload(){this.load.image('accueil', 'assets/accueil.png');}
+    startplaygame(){this.scene.start("PlayGame");}
+    create(){this.accueil = this.add.image(game.config.width/2, game.config.height/2, 'accueil');
+        this.input.on("pointerdown", this.startplaygame, this);}
+    update(){  }
 };
  
 // playGame scene
 class playGame extends Phaser.Scene{
-    constructor(){
-        super("PlayGame");
-    }
+    constructor(){super("PlayGame");}
     init(){}
     preloadSF(){
         this.load.image('cielmauve', 'assets/background.png');
@@ -84,9 +69,10 @@ class playGame extends Phaser.Scene{
         this.load.image('lunes', 'assets/lune.png');
         this.load.image('sol', 'assets/SF.png');
         this.load.image('SFground', 'assets/hitbox.png');
-        this.load.spritesheet('robot', 'assets/robotmouvement.png', { frameWidth: 218, frameHeight: 319 });
-        this.load.image("tachikoma", "assets/tachikoma.png");
-        this.load.image("blob", "assets/blob.png");
+        this.load.spritesheet('robot', 'assets/' + assetsData.robot.filename, { frameWidth: assetsData.robot.width, frameHeight: assetsData.robot.height });
+        this.load.image("tachikoma", 'assets/' + assetsData.tachikoma.filename);
+        this.load.image("blob", 'assets/' + assetsData.blob.filename);
+        this.load.image("murSF", 'assets/' + assetsData.murSF.filename);
     }
     preloadFantasy(){
         this.load.image('sky', 'assets/ciel.png');
@@ -96,11 +82,10 @@ class playGame extends Phaser.Scene{
         this.load.image("foreground", "assets/1erplan.png");
         this.load.image("mountains", "assets/montagne.png");
         this.load.image("bushes", "assets/buisson.png");
-        this.load.image("troll", "assets/troll.png");
-        this.load.image("pieu", "assets/pieu.png");
-        this.load.image("murHF", "assets/tour.png");
-        this.load.image("murSF", "assets/blocsf.png");
-        this.load.spritesheet('goblin', 'assets/gobelins2.png', { frameWidth: 572, frameHeight: 528 });
+        this.load.image("troll", 'assets/' + assetsData.troll.filename);
+        this.load.image("pieu", 'assets/' + assetsData.pieu.filename);
+        this.load.image("murHF", 'assets/' + assetsData.murHF.filename);
+        this.load.spritesheet('goblin', 'assets/' + assetsData.goblin.filename, { frameWidth: assetsData.goblin.width, frameHeight: assetsData.goblin.height });
     }
     
 
@@ -166,13 +151,17 @@ class playGame extends Phaser.Scene{
         this.murSF.setVisible(true);
 
        this.enemies.children.iterate(function(child){
-            child.setScale(1);
+            child.setPosition(child.body.x,840-assetsData.robot.offset.y-(assetsData.robot.height/2));
+            child.setScale(assetsData.robot.scale/assetsData.goblin.scale);
             child.setTexture("robot");
         });
         this.jumpEnemies.children.iterate(function(child){
+            child.setPosition(child.body.x,840-assetsData.blob.offset.y-(assetsData.blob.height/2));
+            child.setScale(assetsData.blob.scale/assetsData.pieu.scale);
             child.setTexture("blob");
         });
         this.slideEnemies.children.iterate(function(child){
+            child.setPosition(child.body.x,840-assetsData.tachikoma.offset.y-(assetsData.tachikoma.height/2));
             child.setTexture("tachikoma");
         });
     }
@@ -201,13 +190,17 @@ class playGame extends Phaser.Scene{
         this.murHF.setVisible(true);
 
         this.enemies.children.iterate(function(child){
-            child.setScale(0.4);
+            child.setPosition(child.body.x,840-assetsData.goblin.offset.y-(assetsData.goblin.height/2));
+            child.setScale(assetsData.goblin.scale/assetsData.robot.scale);
             child.setTexture("goblin");
         });
         this.jumpEnemies.children.iterate(function(child){
+            child.setPosition(child.body.x,840-assetsData.pieu.offset.y-(assetsData.pieu.height/2));
+            child.setScale(assetsData.pieu.scale/assetsData.blob.scale);
             child.setTexture("pieu");
         });
         this.slideEnemies.children.iterate(function(child){
+            child.setPosition(child.body.x,840-assetsData.troll.offset.y-(assetsData.troll.height/2));
             child.setTexture("troll");
         });
     }
@@ -577,9 +570,9 @@ class playGame extends Phaser.Scene{
             case "jump":
             var jumpEnemy;
             if(!this.swap) {
-                jumpEnemy = this.jumpEnemies.create(gameOptions.playerStartPosition+90+this.tempo*7+55, 795, 'pieu').setScale(0.75);
+                jumpEnemy = this.jumpEnemies.create(gameOptions.playerStartPosition+90+this.tempo*7+(assetsData.pieu.scale*assetsData.pieu.width/2)+(assetsData.pieu.offset.x), 840-(assetsData.pieu.scale*assetsData.pieu.height/2)-assetsData.pieu.offset.y, 'pieu').setScale(assetsData.pieu.scale);
             }else{
-                jumpEnemy = this.jumpEnemies.create(gameOptions.playerStartPosition+90+this.tempo*7+55, 795, 'blob').setScale(0.75);
+                jumpEnemy = this.jumpEnemies.create(gameOptions.playerStartPosition+90+this.tempo*7+(assetsData.blob.scale*assetsData.blob.width/2)+(assetsData.blob.offset.x), 840-(assetsData.blob.scale*assetsData.blob.height/2)-assetsData.blob.offset.y, 'blob').setScale(assetsData.blob.scale);
             }
             jumpEnemy.setVelocityX(-gameOptions.platformStartSpeed);
                 console.log("jump generated");
@@ -592,29 +585,29 @@ class playGame extends Phaser.Scene{
             break;
             case "slide":
             var slideEnemy;
-            if(!this.swap) { slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+90+this.tempo*7+174, 437, 'troll');}
-            else { slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+90+this.tempo*7+174, 437, 'tachikoma');}
+            if(!this.swap) { slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+90+this.tempo*7+(assetsData.troll.width/2)+(assetsData.troll.offset.x), 840-(assetsData.troll.height/2)-assetsData.troll.offset.y, 'troll');}
+            else { slideEnemy = this.slideEnemies.create(gameOptions.playerStartPosition+90+this.tempo*7+(assetsData.tachikoma.width/2)+(assetsData.tachikoma.offset.x), 840-(assetsData.tachikoma.height/2)-assetsData.tachikoma.offset.y, 'tachikoma');}
                 slideEnemy.setVelocityX(-gameOptions.platformStartSpeed);
                 console.log("slide generated");
             break;
             case "atk":
             var enemy;
             if(!this.swap) {
-                enemy = this.enemies.create(gameOptions.playerStartPosition+90+this.tempo*7+115, 715, 'goblin').setScale(0.4);
+                enemy = this.enemies.create(gameOptions.playerStartPosition+90+this.tempo*7+(assetsData.goblin.scale*assetsData.goblin.width/2)+(assetsData.goblin.offset.x), 840-(assetsData.goblin.scale*assetsData.goblin.height/2)-assetsData.goblin.offset.y, 'goblin').setScale(assetsData.goblin.scale);
                 enemy.setFlipX(true);
             } 
-            else{enemy = this.enemies.create(gameOptions.playerStartPosition+90+this.tempo*7+115, 715, 'robot');}    
+            else enemy = this.enemies.create(gameOptions.playerStartPosition+90+this.tempo*7+(assetsData.robot.scale*assetsData.robot.width/2)+(assetsData.robot.offset.x), 840-(assetsData.robot.scale*assetsData.robot.height/2)-assetsData.robot.offset.y, 'robot').setScale(assetsData.robot.scale);
                 enemy.setVelocityX(-gameOptions.platformStartSpeed);
                 console.log("atk generated");
             break;
             case "murHF":
-            var murHF = this.murHF.create(gameOptions.playerStartPosition+90+this.tempo*7+210, 440, 'murHF');
+            var murHF = this.murHF.create(gameOptions.playerStartPosition+90+this.tempo*7+(assetsData.murHF.width/2)+(assetsData.murHF.offset.x), 840-(assetsData.murHF.height/2)-assetsData.murHF.offset.y, 'murHF');
             murHF.setVelocityX(-gameOptions.platformStartSpeed);
                 console.log("murHF generated");
                 if(this.swap) murHF.setVisible(false);
             break;
             case "murSF":
-            var murSF = this.murSF.create(gameOptions.playerStartPosition+90+this.tempo*7+210, 440, 'murSF');
+            var murSF = this.murSF.create(gameOptions.playerStartPosition+90+this.tempo*7+(assetsData.murSF.width/2)+(assetsData.murSF.offset.x), 840-(assetsData.murSF.height/2)-assetsData.murSF.offset.y, 'murSF');
             murSF.setVelocityX(-gameOptions.platformStartSpeed);
                 console.log("murSF generated");
                 if(!this.swap) murSF.setVisible(false);
