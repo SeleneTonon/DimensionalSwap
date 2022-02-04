@@ -56,7 +56,7 @@ let assetsData = {
         position:{x:1600,y:200},
         width:473,
         height:91,
-        border:{left:30,top:10},
-        color:0xffff9d
+        border:{left:30,top:05},
+        color:fdacac
     },
 }
