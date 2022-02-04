@@ -93,6 +93,7 @@ class playGame extends Phaser.Scene{
         this.preloadSF();
         this.preloadFantasy();
         this.load.image('star', 'assets/star.png');
+        this.load.image('jauge', 'assets/' + assetsData.jauge.filename);
         this.load.image('boss', 'assets/boss.png');
         this.load.spritesheet('lisbeicourse', 'assets/lisbeicourse.png', { frameWidth: 181, frameHeight: 232 });
         this.load.spritesheet('lisbeislide', 'assets/lisbeiglissade.png', { frameWidth: 280, frameHeight: 143 });
@@ -299,8 +300,11 @@ class playGame extends Phaser.Scene{
         this.generateColliders();
         this.i =0;
         //this.input.on("pointerdown", this.jump, this);
+
+
  
-        this.manaBar=this.makeBar(1600,200,0xFF00FF);
+        this.jauge = this.add.image(assetsData.jauge.position.x, assetsData.jauge.position.y, 'jauge');
+        this.manaBar=this.makeBar(assetsData.jauge.position.x+assetsData.jauge.border.left-assetsData.jauge.width/2,assetsData.jauge.position.y+assetsData.jauge.border.top-assetsData.jauge.height/2,assetsData.jauge.color);
         this.setManaValue(0);
         
         this.musicHF = this.sound.add('musicHF');
@@ -314,7 +318,7 @@ class playGame extends Phaser.Scene{
         this.combo=0;
         let bar = this.add.graphics();
         bar.fillStyle(color, 1);
-        bar.fillRect(0, 0, 200, 50);
+        bar.fillRect(0, 0, (assetsData.jauge.width-2*assetsData.jauge.border.left), (assetsData.jauge.height-2*assetsData.jauge.border.top));
         bar.x = x;
         bar.y = y;
         return bar;
@@ -322,6 +326,7 @@ class playGame extends Phaser.Scene{
 
     setManaValue(percentage) {
         //scale the bar
+        if(percentage>100) percentage=100;
         this.manaBar.scaleX = percentage/100;
         this.manaBar.value = percentage;
     }

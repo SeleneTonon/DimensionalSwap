@@ -51,4 +51,12 @@ let assetsData = {
         height:560,
         offset:{x:0,y:0} 
     },
+    jauge:{
+        filename:"jauge1.png",
+        position:{x:1600,y:200},
+        width:473,
+        height:91,
+        border:{left:30,top:10},
+        color:0xffff9d
+    },
 }
