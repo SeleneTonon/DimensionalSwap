@@ -57,6 +57,6 @@ let assetsData = {
         width:473,
         height:91,
         border:{right:30,top:05},
-        color:#fdacac
+        color:fdacac
     },
 }
