@@ -303,9 +303,10 @@ class playGame extends Phaser.Scene{
 
 
  
-        this.jauge = this.add.image(assetsData.jauge.position.x, assetsData.jauge.position.y, 'jauge');
+        
         this.manaBar=this.makeBar(assetsData.jauge.position.x+assetsData.jauge.border.left-assetsData.jauge.width/2,assetsData.jauge.position.y+assetsData.jauge.border.top-assetsData.jauge.height/2,assetsData.jauge.color);
         this.setManaValue(0);
+        this.jauge = this.add.image(assetsData.jauge.position.x, assetsData.jauge.position.y, 'jauge');
         
         this.musicHF = this.sound.add('musicHF');
         this.musicSF = this.sound.add('musicSF');
