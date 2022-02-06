@@ -3,7 +3,7 @@
 <head> 
     <meta charset="UTF-8" />
     <title>DimensionalSwap</title>
-    <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <script src="phaser.min.js"></script>
     <script src="gameOptions.js"></script>
     <script src="assetsData.js"></script>
     <style type="text/css">
@@ -476,7 +476,7 @@ class playGame extends Phaser.Scene{
             this.musicHF.setMute(true);
             this.sound.add("swap").play();
             this.musicSF.setMute(false);
-            this.setManaValue(this.manaBar.value-50);
+            this.setManaValue(this.manaBar.value-25);
         }else if (this.manaBar.value>25&&(paddle.R2||this.input.keyboard.checkDown(this.cursors.shift,1000))&&this.swap){
             this.swap=false;
             this.musicSF.setMute(true);
@@ -484,7 +484,7 @@ class playGame extends Phaser.Scene{
             this.enableFantasyWallAndEnemies();
             this.musicHF.setMute(false);
             this.sound.add("swap").play();
-            this.setManaValue(this.manaBar.value-50);
+            this.setManaValue(this.manaBar.value-25);
         }
 
         this.generatePlatforms();
@@ -561,12 +561,14 @@ class playGame extends Phaser.Scene{
     }
 
     hitSlideEnemy(player,enemy){
-        player.penalty=16;
-        enemy.inoffensif=true;
+        if(!enemy.inoffensif){    
+            player.penalty=16;
+            enemy.inoffensif=true;
+        }
     }
     checkSlideEnemy(player,enemy){
         console.log("test2 slide enemy");
-        return (!enemy.inoffensif)&&player.sliding==0;
+        return player.sliding==0;
     }
     isNotSliding(){ return this.player.sliding==0;}
 
